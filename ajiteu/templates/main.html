@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- mobiled용 responsive적용 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CodingFive Community</title>
+    <!-- main.css(레이아웃)와 components.css(디테일 요소)를 모두 연결 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+</head>
+
+<body>
+    <div class="main-wrapper">
+
+        <!-- 1. 좌측 프로필 패널 -->
+        <aside class="sidebar-left">
+            <div class="profile-section">
+                <div class="avatar-circle">
+                    <img src="{{ url_for('static', filename='images/default_profile.png') }}" alt="프로필"
+                        onerror="this.style.display='none'">
+                </div>
+                <div class="user-name" id="userName">닉네임</div>
+                <div class="user-bio" id="userBio">프로필 소개</div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="menu-section">
+                <a href="/write" class="btn-pill btn-write">글쓰기</a>
+                <a href="/profile" class="text-link">프로필 설정</a>
+                <a href="/my-posts" class="btn-pill btn-mypost">내가 쓴 글</a>
+                <div class="logout-section">
+                    <a href="/logout" class="text-link logout">로그아웃</a>
+                </div>
+            </div>
+
+
+        </aside>
+
+        <!-- 우측 컨테이너 -->
+        <div class="right-container">
+
+            <!-- 2. 상단 헤더 -->
+            <header class="search-header">
+                <h1 class="community-title">CodingFive Community</h1>
+                <div class="search-box-wrap">
+                    <input type="text" id="searchInput" class="search-input" placeholder="검색어를 입력하세요...">
+                    <button id="searchBtn" class="search-btn">검색</button>
+                </div>
+            </header>
+
+            <!-- 콘텐츠 바디 -->
+            <div class="body-content">
+
+                <!-- 3. 중앙 게시글 카드 수직 스크롤 영역 -->
+                <main class="content-main">
+                    <div class="cards-scroll-area">
+                        <!-- main.js에 의해 동적으로 카드가 생성되거나 초기 예시 카드가 보여지는 그리드 -->
+                        <div class="cards-grid" id="postGrid">
+                            <!-- 초기 렌더링용 카드는 main.js에서 동적 생성됩니다 -->
+                        </div>
+                    </div>
+
+                    <!-- 하단 고정 페이지네이션 -->
+                    <div class="pagination-bar">
+                        <span class="page-arrow">&lt;</span>
+                        <span class="page-num active">1</span>
+                        <span class="page-num">2</span>
+                        <span class="page-num">3</span>
+                        <span class="page-dots">...</span>
+                        <span class="page-num">10</span>
+                        <span class="page-arrow">&gt;</span>
+                    </div>
+                </main>
+
+                <!-- 4. 우측 사이드바 -->
+                <aside class="sidebar-right">
+                    <div class="widget-block">
+                        <div class="widget-title">카테고리</div>
+                        <ul class="widget-list">
+                            <li class="list-item category-item active" data-category="all">전체</li>
+                            <li class="list-item category-item" data-category="travel">여행</li>
+                            <li class="list-item category-item" data-category="exercise">운동</li>
+                            <li class="list-item category-item" data-category="food">음식</li>
+                        </ul>
+                    </div>
+
+                    <hr class="divider-short">
+
+                    <div class="widget-block">
+                        <div class="widget-title">주간 트렌드</div>
+                        <ul class="widget-list trend">
+                            <li class="list-item">제주 바다 사진 모음</li>
+                            <li class="list-item">홈트 루틴 추천</li>
+                            <li class="list-item">감성 브런치 만들기</li>
+                            <li class="list-item">감성 브런치 만들기</li>
+                            <li class="list-item">혼자 떠난 부산 여행</li>
+                        </ul>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 더보기(...) 팝업 모달 -->
+    <div id="postOptionModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-item danger" id="btnDeletePost">삭제</button>
+            <button class="modal-item" id="btnEditPost">수정</button>
+            <button class="modal-item" id="btnGoPost">게시물로 이동</button>
+            <button class="modal-item cancel" id="btnCloseModal">취소</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
