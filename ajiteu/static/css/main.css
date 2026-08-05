@@ -1,0 +1,558 @@
+
+/* ========================================================
+   1. 기본 초기화 및 메인 레이아웃 (Layout & Reset)
+   ======================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    height: 100vh;        /* ← 추가 */
+    overflow: hidden;     /* ← 추가 */
+}
+
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+    max-width: 1440px;
+    margin: 0 auto;
+    height: 100vh;        /* ← 추가 */
+}
+
+/* ========================================================
+   2. 좌측 프로필 패널 (Sidebar Left)
+   ======================================================== */
+.sidebar-left {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 5.5rem;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-bio {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.divider {
+    border: 0;
+    border-top: 1px solid #f1f5f9;
+    margin: 1.5rem 0;
+}
+
+.menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-pill {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    text-align: center;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-write {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.btn-write:hover {
+    background-color: #2563eb;
+}
+
+.btn-mypost {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+.btn-mypost:hover {
+    background-color: #e2e8f0;
+}
+
+.text-link {
+    display: block;
+    text-align: center;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+}
+
+.text-link:hover {
+    color: #0f172a;
+}
+
+.logout-section {
+    margin-top: auto;
+}
+
+.logout-section .logout {
+    color: #ef4444;
+}
+
+/* ========================================================
+   3. 우측 메인 영역 및 상단 헤더 (Right Container & Header)
+   ======================================================== */
+.right-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100vh;        /* ← 추가 */
+}
+
+.search-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1.5rem 1.5rem; /* 하단 content-main 패딩과 정확히 일치 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+/* [수정] CodingFive와 Community 사이 간격을 알파벳 1자 정도로 고정하고, 카드 1과 2 사이에 오도록 위치 조절 */
+.community-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: center;
+    word-spacing: 0.25em; /* 알파벳 약 1글자 정도의 자연스러운 간격 */
+    margin-right: 240px;  /* 우측 사이드바 영역만큼을 제외한 카드 1, 2 사이의 중앙으로 위치 정렬 */
+}
+
+/* [수정] 검색창의 왼쪽 끝이 author name 1, 오른쪽 끝이 author name 2와 일치하도록 폭 조절 */
+.search-box-wrap {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    padding-right: 240px; /* 우측 사이드바(240px)를 제외한 카드 2개 영역 전체에 정확히 일치 */
+}
+
+.search-input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+    width: 100%; /* 카드 1 끝부터 카드 2 끝까지 꽉 차도록 확장 */
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+}
+
+.search-btn {
+    padding: 0.5rem 1.2rem;
+    background-color: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.body-content {
+    display: flex;
+    flex: 1;
+    min-height: 0;        /* ← 추가 */
+    overflow: hidden;     /* ← 추가 */
+}
+
+/* ========================================================
+   4. 중앙 카드 영역 (2개씩 배치 & 스크롤바 유지)
+   ======================================================== */
+.content-main {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.cards-scroll-area {
+    flex: 1;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    padding-right: 8px;
+    /* overflow: hidden;     /* ← auto에서 hidden으로 변경 */
+    /* min-height: 0;        ← 추가 */
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.card-item {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.card-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.author-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #cbd5e1;
+}
+
+.author-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.post-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.btn-more {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0 0.25rem;
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+}
+
+.card-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2; /* 표준 속성 추가 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.card-bottom {
+    display: flex;
+    gap: 1.2rem;
+    font-size: 0.85rem;
+    color: #64748b;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.75rem;
+}
+
+.action-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pagination-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.page-num, .page-arrow {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.page-num.active {
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* ========================================================
+   5. 우측 사이드바 (Sidebar Right)
+   ======================================================== */
+.sidebar-right {
+    width: 240px;
+    background-color: #ffffff;
+    border-left: 1px solid #e2e8f0;
+    padding: 1.5rem;
+}
+
+.widget-block {
+    margin-bottom: 1.5rem;
+}
+
+.widget-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: #0f172a;
+}
+
+.widget-list {
+    list-style: none;
+}
+
+.list-item {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #475569;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.list-item:hover {
+    background-color: #f8fafc;
+}
+
+.list-item.active {
+    background-color: #eff6ff;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.divider-short {
+    border: 0;
+    border-top: 1px solid #f1f5f9;
+    margin: 1rem 0;
+}
+
+/* ========================================================
+   6. 기본 옵션 모달 (postOptionModal)
+   ======================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 280px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-item {
+    padding: 1rem;
+    border: none;
+    background: white;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-item:last-child {
+    border-bottom: none;
+}
+
+.modal-item.danger {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.modal-item.cancel {
+    color: #94a3b8;
+}
+
+/* ========================================================
+   7. 카드 클릭 시 크게 보기 슬라이드 모달
+   ======================================================== */
+.card-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.card-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-card-container {
+    position: relative;
+    width: 95%;
+    max-width: 1100px;
+    height: 88vh;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 3rem 4.5rem;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #666;
+    cursor: pointer;
+    z-index: 30;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.modal-close-btn:hover {
+    color: #000;
+    transform: scale(1.1);
+}
+
+.slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    z-index: 30;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.slide-btn:hover {
+    background: #f8fafc;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.slide-btn.prev { 
+    left: 15px; 
+}
+
+.slide-btn.next { 
+    right: 15px; 
+}
+
+.slide-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.slide-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: transform 0.35s ease-in-out, opacity 0.35s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.slide-card.active {
+    opacity: 1;
+    transform: translateX(0);
+}
