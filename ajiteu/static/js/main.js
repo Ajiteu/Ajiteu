@@ -1,13 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let currentCategory = 'all';
     let currentSearchQuery = '';
-    
-    // 슬라이드 모달 관리용 변수
     let globalPosts = [];
-    let currentSlideIndex = 0;
-
-    // 슬라이드 모달 DOM 생성
-    createSlideModal();
 
     // 초기 게시글 로드
     fetchPosts();
@@ -48,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(url)
             .then(response => {
-                if (!response.ok) throw new Error('서버 미연결 (Live Server)');
+                if (!response.ok) throw new Error('서버 미연결');
                 return response.json();
             })
             .then(data => {
@@ -62,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // 4. 게시글 카드 동적 렌더링
+    // 4. 게시글 카드 동적 렌더링 (타이틀 완전 삭제)
     function renderPosts(posts) {
         const postGrid = document.getElementById('postGrid');
         if (!postGrid) return;
@@ -74,24 +68,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        posts.forEach((post, index) => {
+        posts.forEach((post) => {
             const card = document.createElement('div');
             card.className = 'card-item';
             card.style.cursor = 'pointer';
             
-            // 카드 클릭 시 크게 보기 슬라이드 모달 오픈 (더보기 버튼 클릭 제외)
+            // 카드 클릭 시 닉네임 상세보기 모달만 단일 오픈
             card.addEventListener('click', (e) => {
-                if (e.target.classList.contains('btn-more')) return;
-                openSlideModal(index);
+                if (e.target.closest('.btn-more') || e.target.closest('.action-item')) return;
+                openDetailModal(post);
             });
 
+            // 타이틀 삭제 적용
             card.innerHTML = `
                 <div class="card-top">
                     <div class="author-box">
                         <div class="author-avatar"></div>
                         <div class="author-meta">
                             <div class="author-name">${escapeHtml(post.author)}</div>
-                            <div class="post-date">${post.created_at}</div>
+                            <div class="post-date">${escapeHtml(post.created_at)}</div>
                         </div>
                     </div>
                     <button class="btn-more" data-id="${post.id}">...</button>
@@ -99,16 +94,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-middle">
                     <div class="thumb-box"></div>
                     <div class="text-box">
-                        <div class="card-title">${escapeHtml(post.title)}</div>
-                        <div class="card-desc">${escapeHtml(post.excerpt)}</div>
+                        <div class="card-desc"></div>
                     </div>
                 </div>
                 <div class="card-bottom">
-                    <!-- 글자 제거, 아이콘과 숫자만 표시 -->
-                    <span class="action-item"><i class="icon">👍</i> ${post.like_count}</span>
-                    <span class="action-item"><i class="icon">💬</i> ${post.comment_count || 0}</span>
-                    <!-- 해시태그 SVG 아이콘 적용 -->
-                    <span class="action-item" style="display: inline-flex; align-items: center; gap: 4px;">
+                    <a href="/like" class="action-item text-decoration-none text-reset">
+                        <i class="icon">👍</i> ${post.like_count}
+                    </a>
+                    <a href="/comment" class="action-item text-decoration-none text-reset">
+                        <i class="icon">💬</i> ${post.comment_count || 0}
+                    </a>
+                    <a href="/view" class="action-item text-decoration-none text-reset" style="display: inline-flex; align-items: center; gap: 4px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                             <line x1="4" y1="9" x2="20" y2="9"></line>
                             <line x1="4" y1="15" x2="20" y2="15"></line>
@@ -116,13 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             <line x1="16" y1="3" x2="14" y2="21"></line>
                         </svg>
                         ${post.view_count || 156}
-                    </span>
+                    </a>
                 </div>
             `;
             postGrid.appendChild(card);
         });
 
-        // 더보기 (...) 버튼 이벤트
+        // 카드 상단 더보기(...) 버튼 클릭 시 옵션 모달 오픈
         document.querySelectorAll('.btn-more').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -132,95 +128,139 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. 슬라이드 모달 생성 및 관리
-    function createSlideModal() {
-        const modalOverlay = document.createElement('div');
-        modalOverlay.id = 'cardSlideModal';
-        modalOverlay.className = 'card-modal-overlay';
-        modalOverlay.innerHTML = `
-            <div class="modal-card-container">
-                <button class="modal-close-btn">&times;</button>
-                <button class="slide-btn prev">&lt;</button>
-                <button class="slide-btn next">&gt;</button>
-                <div class="slide-wrapper" id="slideWrapper"></div>
-            </div>
-        `;
-        document.body.appendChild(modalOverlay);
-
-        modalOverlay.querySelector('.modal-close-btn').addEventListener('click', closeSlideModal);
-        modalOverlay.querySelector('.slide-btn.prev').addEventListener('click', () => changeSlide(-1));
-        modalOverlay.querySelector('.slide-btn.next').addEventListener('click', () => changeSlide(1));
-        
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeSlideModal();
+    /* --- 5. 새글 작성 모달 제어 --- */
+    const btnWriteOpen = document.getElementById('btnWriteOpen');
+    if (btnWriteOpen) {
+        btnWriteOpen.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('postModal').classList.add('active');
         });
     }
 
-    function openSlideModal(index) {
-        currentSlideIndex = index;
-        const modal = document.getElementById('cardSlideModal');
-        modal.classList.add('active');
-        renderSlideContent();
+    const btnCancelWrite = document.getElementById('btnCancelWrite');
+    if (btnCancelWrite) {
+        btnCancelWrite.addEventListener('click', closeWriteModal);
     }
 
-    function closeSlideModal() {
-        const modal = document.getElementById('cardSlideModal');
-        modal.classList.remove('active');
+    function closeWriteModal() {
+        document.getElementById('postModal').classList.remove('active');
+        document.getElementById('postForm').reset();
+        document.getElementById('imagePreview').innerHTML = '';
     }
 
-    function changeSlide(direction) {
-        const newIndex = currentSlideIndex + direction;
-        if (newIndex >= 0 && newIndex < globalPosts.length) {
-            currentSlideIndex = newIndex;
-            renderSlideContent();
+    // 이미지 업로드 미리보기
+    const imageUploadInput = document.getElementById('imageUploadInput');
+    if (imageUploadInput) {
+        imageUploadInput.addEventListener('change', (event) => {
+            const previewContainer = document.getElementById('imagePreview');
+            previewContainer.innerHTML = '';
+            const files = event.target.files;
+
+            if (files) {
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-img';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    }
+
+    document.getElementById('postForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('글이 성공적으로 등록되었습니다.');
+        closeWriteModal();
+    });
+
+    /* --- 6. 게시글 상세보기 모달 제어 --- */
+    function openDetailModal(post) {
+        if (post) {
+            document.getElementById('detailAuthorName').innerText = post.author || '닉네임';
+            document.getElementById('bottomLikeCount').innerText = post.like_count || 0;
+            document.getElementById('bottomCommentCount').innerText = post.comment_count || 0;
+            document.getElementById('bottomViewCount').innerText = post.view_count || 156;
+        }
+        document.getElementById('postDetailModal').classList.add('active');
+    }
+
+    const btnCloseDetail = document.getElementById('btnCloseDetail');
+    if (btnCloseDetail) {
+        btnCloseDetail.addEventListener('click', closeDetailModal);
+    }
+
+    function closeDetailModal() {
+        document.getElementById('postDetailModal').classList.remove('active');
+        document.getElementById('commentForm').reset();
+        hideDetailDropdown();
+    }
+
+    // 모달 우측 상단 더보기(...) 내림 메뉴 토글
+    const btnDetailMore = document.getElementById('btnDetailMore');
+    const detailDropdownMenu = document.getElementById('detailDropdownMenu');
+
+    if (btnDetailMore && detailDropdownMenu) {
+        btnDetailMore.addEventListener('click', (e) => {
+            e.stopPropagation();
+            detailDropdownMenu.classList.toggle('hidden');
+        });
+    }
+
+    function hideDetailDropdown() {
+        if (detailDropdownMenu) {
+            detailDropdownMenu.classList.add('hidden');
         }
     }
 
-    function renderSlideContent() {
-        const wrapper = document.getElementById('slideWrapper');
-        const post = globalPosts[currentSlideIndex];
-        if (!post) return;
+    // 상세보기 모달 우측 상단 팝업 메뉴 액션 버튼
+    document.getElementById('btnDetailDelete')?.addEventListener('click', () => {
+        alert('삭제 요청되었습니다.');
+        hideDetailDropdown();
+    });
+    document.getElementById('btnDetailEdit')?.addEventListener('click', () => {
+        alert('수정 화면으로 이동합니다.');
+        hideDetailDropdown();
+    });
+    document.getElementById('btnDetailGo')?.addEventListener('click', () => {
+        alert('게시물로 이동합니다.');
+        hideDetailDropdown();
+    });
+    document.getElementById('btnDetailCancel')?.addEventListener('click', () => {
+        hideDetailDropdown();
+    });
 
-        const newSlide = document.createElement('div');
-        newSlide.className = 'slide-card';
-        newSlide.innerHTML = `
-            <div class="card-top" style="border-bottom: 1px solid #eee; padding-bottom: 15px;">
-                <div class="author-box" style="display: flex; align-items: center; gap: 12px;">
-                    <div class="author-avatar" style="width: 48px; height: 48px; border-radius: 50%; background: #e0e0e0;"></div>
-                    <div class="author-meta">
-                        <div class="author-name" style="font-size: 1.4rem; font-weight: bold; color: #222;">${escapeHtml(post.author)}</div>
-                        <div class="post-date" style="font-size: 0.9rem; color: #888;">${post.created_at}</div>
-                    </div>
+    // 댓글 등록 처리
+    document.getElementById('commentForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('commentInput');
+        if (input.value.trim() === '') return;
+
+        const commentList = document.getElementById('commentList');
+        const newComment = document.createElement('div');
+        newComment.className = 'comment-item';
+        newComment.innerHTML = `
+            <div class="d-flex align-items-start gap-2">
+                <div class="comment-profile-circle flex-shrink-0"></div>
+                <div>
+                    <div class="fw-bold small text-dark">작성자</div>
+                    <div class="small text-secondary">${escapeHtml(input.value)}</div>
                 </div>
             </div>
-            <div class="card-middle" style="margin: 30px 0; flex: 1; overflow-y: auto;">
-                <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: #111;">${escapeHtml(post.title)}</h1>
-                <p style="font-size: 1.15rem; line-height: 1.8; color: #444; white-space: pre-line;">${escapeHtml(post.excerpt)}</p>
-            </div>
-            <div class="card-bottom" style="border-top: 1px solid #eee; padding-top: 15px; display: flex; gap: 20px; font-size: 1rem; color: #666;">
-                <span class="action-item"><i class="icon">👍</i> ${post.like_count}</span>
-                <span class="action-item"><i class="icon">💬</i> ${post.comment_count || 0}</span>
-                <span class="action-item" style="display: inline-flex; align-items: center; gap: 6px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="4" y1="9" x2="20" y2="9"></line>
-                        <line x1="4" y1="15" x2="20" y2="15"></line>
-                        <line x1="10" y1="3" x2="8" y2="21"></line>
-                        <line x1="16" y1="3" x2="14" y2="21"></line>
-                    </svg>
-                    ${post.view_count || 156}
-                </span>
-            </div>
         `;
+        commentList.appendChild(newComment);
+        input.value = '';
 
-        wrapper.innerHTML = '';
-        wrapper.appendChild(newSlide);
+        const mainCount = document.getElementById('mainCommentCount');
+        const current = parseInt(mainCount.innerText) || 0;
+        mainCount.innerText = current + 1;
+        document.getElementById('bottomCommentCount').innerText = current + 1;
+    });
 
-        setTimeout(() => {
-            newSlide.classList.add('active');
-        }, 10);
-    }
-
-    // 팝업 모달 닫기 이벤트
+    // 메인 더보기(...) 옵션 팝업 닫기 처리
     const btnCloseModal = document.getElementById('btnCloseModal');
     if (btnCloseModal) {
         btnCloseModal.addEventListener('click', () => {
@@ -228,20 +268,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 배경 클릭 시 드롭다운 및 모달 닫기 이벤트
+    window.addEventListener('click', (e) => {
+        hideDetailDropdown();
+        
+        const optionModal = document.getElementById('postOptionModal');
+        if (e.target === optionModal) {
+            optionModal.classList.add('hidden');
+        }
+    });
+
     // HTML 태그 이스케이프 함수
     function escapeHtml(str) {
-        return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    // 더미 데이터 생성기
+    // 더미 데이터 생성기 (제목 없는 스펙 반영)
     function getDummyPosts() {
         const dummy = [];
         for (let i = 1; i <= 10; i++) {
             dummy.push({
                 id: i,
                 author: 'Author Name ' + i,
-                title: 'Community communities size test ' + i,
-                excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 created_at: '2024.08.13',
                 like_count: i * 2,
                 comment_count: i,
