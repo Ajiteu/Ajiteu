@@ -21,21 +21,27 @@
         <!-- 1. 좌측 프로필 패널 -->
         <aside class="sidebar-left bg-white border-end p-4 d-flex flex-column flex-shrink-0">
             <div class="profile-section d-flex flex-column align-items-center text-center">
+                {% if user %}
                 <!-- 프로필 이미지 동그라미 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
                     <div class="avatar-circle overflow-hidden mb-3">
-                        <img src="{{ url_for('static', filename='images/default_profile.png') }}" alt="프로필"
-                            class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'">
+                        <img src="{{ user.image_path and url_for('static', filename=user.image_path) or url_for('static', filename='images/default.png') }}"
+                            alt="프로필" class="w-100 h-100 object-fit-cover"
+                            data-default-img="{{ url_for('static', filename='images/default.png') }}"
+                            onerror="this.onerror=null; this.src=this.dataset.defaultImg;">
                     </div>
                 </a>
                 <!-- 닉네임 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
-                    <div class="user-name fw-bold" id="userName">닉네임</div>
+                    <!-- <div class="user-name fw-bold" id="userName">닉네임</div> -->
+                    <div class="user-name fw-bold" id="userName">{{ user.username }}</div>
                 </a>
                 <!-- 프로필 소개 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
-                    <div class="user-bio text-secondary small" id="userBio">프로필 소개</div>
+                    <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
+                    <div class="user-bio text-secondary small" id="userBio">{{ user_intro }}</div>
                 </a>
+                {% endif %}
             </div>
 
             <hr class="divider my-4">
