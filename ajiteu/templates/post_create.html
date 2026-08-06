@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% block content %}
+<!-- 새글 작성 팝업 모달 -->
+<div id="postModal" class="modal-overlay-write" style="display: flex;">
+    <div class="modal-write-card">
+        <div class="border-bottom pb-2 mb-3">
+            <h5 class="fw-bold m-0">새글 작성</h5>
+        </div>
+        <form id="postForm" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+            <div class="fw-bold mb-2 text-dark" id="modalUserNickname">닉네임</div>
+            <div class="mb-3">
+                <textarea class="form-control" id="postContent" rows="8" 
+                    placeholder="어떤 순간을 공유하고 싶으신가요?" style="resize: none;" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="imageUpload" class="btn btn-sm btn-outline-secondary">📷 사진 추가</label>
+                <input type="file" class="d-none" accept="image/*" multiple id="imageUploadInput">
+                <div id="imagePreview" class="image-preview-box mt-2"></div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 pt-2">
+                <a href="{{ url_for('post._list') }}" class="btn btn-secondary btn-sm px-3" id="btnCancelWrite">취소</a>
+                <button type="submit" class="btn btn-primary btn-sm px-3">등록하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

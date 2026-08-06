@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
+from ajiteu.filter import format_datetime           #filter추가
 import config
 
 db = SQLAlchemy()
@@ -15,6 +15,8 @@ def create_app():
     from . import models
     db.init_app(app)
     migrate.init_app(app, db)
+
+    app.jinja_env.filters['datetime'] = format_datetime         #806추가
 
     from .views import main_views, post_api, reply_api, comment_api, auth_views
     app.register_blueprint(main_views.bp)
