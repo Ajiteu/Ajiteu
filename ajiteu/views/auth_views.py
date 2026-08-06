@@ -57,11 +57,11 @@ def login():
             session.clear()
             session['user_id'] = user.id
             print("goto====> main.index")
-            # return redirect(url_for('main.index'))
+            return redirect(url_for('post._list'))
         flash(error)
     print("login =====> none")
-    # return render_template('auth/login.html', form=form)
-    return render_template('main.html', form=form)
+    return render_template('auth/login.html', form=form)
+    # return render_template('main.html', form=form)
 
 
 @bp.route('/logout')
