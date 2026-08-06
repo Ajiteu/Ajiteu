@@ -1,6 +1,5 @@
-
 /* ==========================================
-   프로필 사이드바 컴포넌트
+   1. 프로필 사이드바 컴포넌트
    ========================================== */
 .profile-section {
     display: flex;
@@ -83,22 +82,25 @@
 }
 
 /* ==========================================
-   게시글 카드 컴포넌트
+   2. 게시글 카드 컴포넌트
    ========================================== */
 .card-item {
     border: 1.5px solid #111111;
     border-radius: 12px;
-    padding: 0.9rem 1rem;
+    padding: 1.1rem 1.1rem 0.9rem 1.1rem;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 190px;
-    transition: transform 0.2s;
+    min-height: 220px;
+    height: auto;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
 }
 
 .card-item:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card-top {
@@ -114,11 +116,19 @@
 }
 
 .author-avatar {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     border: 1.5px solid #111111;
     background-color: #e0e0e0;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .author-name {
@@ -144,14 +154,15 @@
 .card-middle {
     display: flex;
     gap: 0.8rem;
-    align-items: center;
+    align-items: flex-start;
     margin: 0.6rem 0;
     cursor: pointer;
+    flex: 1;
 }
 
 .thumb-box {
-    width: 65px;
-    height: 65px;
+    width: 60px;
+    height: 60px;
     border: 1.5px solid #111111;
     border-radius: 10px;
     background-color: #e8e8e8;
@@ -160,13 +171,7 @@
 
 .text-box {
     flex: 1;
-}
-
-.card-title {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin-bottom: 0.3rem;
-    line-height: 1.2;
+    min-width: 0;
 }
 
 .card-desc {
@@ -174,10 +179,10 @@
     color: #555555;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    line-clamp: 2; /* ★ 표준 속성 추가 (물결무늬 완화/해결) */
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.3;
+    line-height: 1.35;
 }
 
 .card-bottom {
@@ -186,16 +191,19 @@
     font-size: 0.8rem;
     color: #111111;
     align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.6rem;
+    margin-top: 0.4rem;
 }
 
 .action-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.3rem;
 }
 
 /* ==========================================
-   우측 카테고리 & 트렌드 위젯
+   3. 우측 카테고리 & 트렌드 위젯
    ========================================== */
 .widget-title {
     font-size: 0.95rem;
@@ -205,9 +213,6 @@
 
 .widget-list {
     list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
 }
 
 .list-item {
@@ -218,7 +223,7 @@
 
 .list-item.active {
     font-weight: bold;
-    color: #007bff;
+    color: #0d6efd;
 }
 
 .widget-list.trend .list-item {
@@ -233,49 +238,191 @@
 }
 
 /* ==========================================
-   더보기(...) 옵션 팝업 모달
+   4. 새글 작성 및 상세 보기 모달 스타일
    ========================================== */
-.modal-overlay {
+.modal-overlay-write {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1050;
 }
 
-.modal-overlay.hidden {
+.modal-overlay-write.active {
+    display: flex;
+}
+
+/* 새글 작성 카드 사이즈 확대 수정 */
+.modal-write-card {
+    background-color: #ffffff;
+    width: 95%;
+    max-width: 750px;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.image-preview-box {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.preview-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.modal-overlay-detail {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1060;
+}
+
+.modal-overlay-detail.active {
+    display: flex;
+}
+
+.modal-detail-card {
+    background-color: #ffffff;
+    width: 95%;
+    max-width: 650px;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #333;
+}
+
+/* 우측 상단 버튼 액션 헤더 */
+.detail-header-actions {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20;
+}
+
+.btn-detail-more {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    color: #333;
+}
+
+.btn-close-detail {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    color: #333;
+}
+
+/* 모달 우측 상단 내림 메뉴 (PDF 팝업 양식 적용) */
+.dropdown-detail-wrap {
+    position: relative;
+}
+
+.detail-dropdown-menu {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    width: 150px;
+    background: #ffffff;
+    border: 1.5px solid #111111;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 30;
+}
+
+.detail-dropdown-menu.hidden {
     display: none;
 }
 
-.modal-content {
-    background: #ffffff;
-    width: 260px;
-    border-radius: 12px;
-    border: 1.5px solid #111111;
-    overflow: hidden;
-}
-
-.modal-item {
+.detail-dropdown-menu .dropdown-item {
     width: 100%;
-    padding: 0.8rem;
+    padding: 0.6rem 0.8rem;
     border: none;
     background: none;
     border-bottom: 1px solid #eee;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    text-align: center;
+    color: #111;
 }
 
-.modal-item.danger {
+.detail-dropdown-menu .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.detail-dropdown-menu .dropdown-item.danger {
     color: #dc3545;
     font-weight: bold;
 }
 
-.modal-item.cancel {
-    border-bottom: none;
+.detail-dropdown-menu .dropdown-item.cancel {
     color: #666;
+}
+
+.modal-detail-body {
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.detail-profile-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    background-color: #f8f9fa;
+}
+
+.detail-image-box {
+    width: 100%;
+    height: 250px;
+    border: 1px solid #333;
+    position: relative;
+    background-color: #fff;
+}
+
+.detail-image-box::before,
+.detail-image-box::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to top right, transparent calc(50% - 1px), #333 50%, transparent calc(50% + 1px)),
+                linear-gradient(to bottom right, transparent calc(50% - 1px), #333 50%, transparent calc(50% + 1px));
+}
+
+.comment-profile-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    background-color: #f8f9fa;
 }

@@ -3,44 +3,53 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- mobiled용 responsive적용 -->
+    <!-- 모바일용 반응형 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CodingFive Community</title>
-    <!-- main.css(레이아웃)와 components.css(디테일 요소)를 모두 연결 -->
+    <!-- Bootstrap 5 CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- 커스텀 메인 레이아웃 및 컴포넌트 CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
 </head>
 
-<body>
-    <div class="main-wrapper">
+<body class="bg-light text-dark">
+    <div class="main-wrapper d-flex mx-auto">
 
         <!-- 1. 좌측 프로필 패널 -->
-        <aside class="sidebar-left">
-            <div class="profile-section">
-                <div class="avatar-circle">
-                    <img src="{{ url_for('static', filename='images/default_profile.png') }}" alt="프로필"
-                        onerror="this.style.display='none'">
-                </div>
-                <div class="user-name" id="userName">닉네임</div>
-                <div class="user-bio" id="userBio">프로필 소개</div>
+        <aside class="sidebar-left bg-white border-end p-4 d-flex flex-column flex-shrink-0">
+            <div class="profile-section d-flex flex-column align-items-center text-center">
+                <!-- 프로필 이미지 동그라미 링크 -->
+                <a href="/profile" class="text-decoration-none text-reset">
+                    <div class="avatar-circle overflow-hidden mb-3">
+                        <img src="{{ url_for('static', filename='images/default_profile.png') }}" alt="프로필"
+                            class="w-100 h-100 object-fit-cover" onerror="this.style.display='none'">
+                    </div>
+                </a>
+                <!-- 닉네임 링크 -->
+                <a href="/profile" class="text-decoration-none text-reset">
+                    <div class="user-name fw-bold" id="userName">닉네임</div>
+                </a>
+                <!-- 프로필 소개 링크 -->
+                <a href="/profile" class="text-decoration-none text-reset">
+                    <div class="user-bio text-secondary small" id="userBio">프로필 소개</div>
+                </a>
             </div>
 
-            <hr class="divider">
+            <hr class="divider my-4">
 
-            <div class="menu-section">
-                <a href="/write" class="btn-pill btn-write">글쓰기</a>
-                <a href="/profile" class="text-link">프로필 설정</a>
-                <a href="/my-posts" class="btn-pill btn-mypost">내가 쓴 글</a>
-                <div class="logout-section">
-                    <a href="/logout" class="text-link logout">로그아웃</a>
+            <div class="menu-section d-flex flex-column align-items-center gap-3">
+                <a href="/write" class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold" id="btnWriteOpen">글쓰기</a>
+                <a href="/profile" class="text-link text-decoration-none text-secondary">프로필 설정</a>
+                <a href="/my-posts" class="btn-pill btn-mypost w-100 text-decoration-none text-center fw-semibold">내가 쓴 글</a>
+                <div class="logout-section mt-auto pt-3">
+                    <a href="/logout" class="text-link logout text-decoration-none text-danger fw-semibold">로그아웃</a>
                 </div>
             </div>
-
-
         </aside>
 
         <!-- 우측 컨테이너 -->
-        <div class="right-container">
+        <div class="right-container flex-grow-1 d-flex flex-column">
 
             <!-- 2. 상단 헤더 -->
             <header class="search-header">
@@ -52,34 +61,32 @@
             </header>
 
             <!-- 콘텐츠 바디 -->
-            <div class="body-content">
+            <div class="body-content d-flex flex-grow-1 overflow-hidden">
 
                 <!-- 3. 중앙 게시글 카드 수직 스크롤 영역 -->
-                <main class="content-main">
-                    <div class="cards-scroll-area">
-                        <!-- main.js에 의해 동적으로 카드가 생성되거나 초기 예시 카드가 보여지는 그리드 -->
-                        <div class="cards-grid" id="postGrid">
-                            <!-- 초기 렌더링용 카드는 main.js에서 동적 생성됩니다 -->
-                        </div>
+                <main class="content-main flex-grow-1 p-4 d-flex flex-column">
+                    <div class="cards-scroll-area flex-grow-1 overflow-y-auto pe-2">
+                        <!-- main.js에 의해 동적으로 생성되는 2열 그리드 -->
+                        <div class="cards-grid" id="postGrid"></div>
                     </div>
 
                     <!-- 하단 고정 페이지네이션 -->
-                    <div class="pagination-bar">
-                        <span class="page-arrow">&lt;</span>
-                        <span class="page-num active">1</span>
-                        <span class="page-num">2</span>
-                        <span class="page-num">3</span>
-                        <span class="page-dots">...</span>
-                        <span class="page-num">10</span>
-                        <span class="page-arrow">&gt;</span>
+                    <div class="pagination-bar d-flex justify-content-center align-items-center gap-2 mt-4">
+                        <span class="page-arrow user-select-none">&lt;</span>
+                        <span class="page-num active user-select-none">1</span>
+                        <span class="page-num user-select-none">2</span>
+                        <span class="page-num user-select-none">3</span>
+                        <span class="page-dots user-select-none">...</span>
+                        <span class="page-num user-select-none">10</span>
+                        <span class="page-arrow user-select-none">&gt;</span>
                     </div>
                 </main>
 
                 <!-- 4. 우측 사이드바 -->
-                <aside class="sidebar-right">
-                    <div class="widget-block">
-                        <div class="widget-title">카테고리</div>
-                        <ul class="widget-list">
+                <aside class="sidebar-right bg-white border-start p-4">
+                    <div class="widget-block mb-4">
+                        <div class="widget-title fw-bold mb-3">카테고리</div>
+                        <ul class="widget-list list-unstyled d-flex flex-column gap-2 m-0 p-0">
                             <li class="list-item category-item active" data-category="all">전체</li>
                             <li class="list-item category-item" data-category="travel">여행</li>
                             <li class="list-item category-item" data-category="exercise">운동</li>
@@ -87,16 +94,15 @@
                         </ul>
                     </div>
 
-                    <hr class="divider-short">
+                    <hr class="divider-short my-3">
 
                     <div class="widget-block">
-                        <div class="widget-title">주간 트렌드</div>
-                        <ul class="widget-list trend">
-                            <li class="list-item">제주 바다 사진 모음</li>
-                            <li class="list-item">홈트 루틴 추천</li>
-                            <li class="list-item">감성 브런치 만들기</li>
-                            <li class="list-item">감성 브런치 만들기</li>
-                            <li class="list-item">혼자 떠난 부산 여행</li>
+                        <div class="widget-title fw-bold mb-3">주간 트렌드</div>
+                        <ul class="widget-list trend list-unstyled d-flex flex-column gap-2 m-0 p-0">
+                            <li class="list-item text-truncate">제주 바다 사진 모음</li>
+                            <li class="list-item text-truncate">홈트 루틴 추천</li>
+                            <li class="list-item text-truncate">감성 브런치 만들기</li>
+                            <li class="list-item text-truncate">혼자 떠난 부산 여행</li>
                         </ul>
                     </div>
                 </aside>
@@ -107,14 +113,138 @@
 
     <!-- 더보기(...) 팝업 모달 -->
     <div id="postOptionModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="modal-item danger" id="btnDeletePost">삭제</button>
-            <button class="modal-item" id="btnEditPost">수정</button>
-            <button class="modal-item" id="btnGoPost">게시물로 이동</button>
+        <div class="modal-content border border-dark rounded-3 overflow-hidden shadow">
+            <button class="modal-item danger border-bottom border-light" id="btnDeletePost">삭제</button>
+            <button class="modal-item border-bottom border-light" id="btnEditPost">수정</button>
+            <button class="modal-item border-bottom border-light" id="btnGoPost">게시물로 이동</button>
             <button class="modal-item cancel" id="btnCloseModal">취소</button>
         </div>
     </div>
 
+    <!-- 새글 작성 팝업 모달 -->
+    <div id="postModal" class="modal-overlay-write">
+        <div class="modal-write-card">
+            <div class="border-bottom pb-2 mb-3">
+                <h5 class="fw-bold m-0">새글 작성</h5>
+            </div>
+            <form id="postForm">
+                <div class="fw-bold mb-2 text-dark" id="modalUserNickname">닉네임</div>
+                <div class="mb-3">
+                    <textarea class="form-control" id="postContent" rows="8" 
+                        placeholder="어떤 순간을 공유하고 싶으신가요?" style="resize: none;" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="imageUpload" class="btn btn-sm btn-outline-secondary">📷 사진 추가</label>
+                    <input type="file" class="d-none" accept="image/*" multiple id="imageUploadInput">
+                    <div id="imagePreview" class="image-preview-box mt-2"></div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 pt-2">
+                    <button type="button" class="btn btn-secondary btn-sm px-3" id="btnCancelWrite">취소</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-3">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 게시글 보기 팝업 모달 -->
+    <div id="postDetailModal" class="modal-overlay-detail">
+        <div class="modal-detail-card">
+            <!-- 우측 상단 옵션 버튼 및 닫기 버튼 헤더 영역 -->
+            <div class="detail-header-actions">
+                <div class="dropdown-detail-wrap">
+                    <button class="btn-detail-more" id="btnDetailMore">...</button>
+                    <!-- PDF 팝업 내림 메뉴 -->
+                    <div class="detail-dropdown-menu hidden" id="detailDropdownMenu">
+                        <button class="dropdown-item danger" id="btnDetailDelete">삭제</button>
+                        <button class="dropdown-item" id="btnDetailEdit">수정</button>
+                        <button class="dropdown-item" id="btnDetailGo">게시물로 이동</button>
+                        <button class="dropdown-item cancel" id="btnDetailCancel">취소</button>
+                    </div>
+                </div>
+                <button class="btn-close-detail" id="btnCloseDetail">✕</button>
+            </div>
+
+            <div class="modal-detail-body">
+                
+                <!-- 1. 프로필 동그라미 및 닉네임 (링크 적용) -->
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <a href="/profile" class="text-decoration-none text-reset d-flex align-items-center gap-3">
+                        <div class="detail-profile-circle flex-shrink-0"></div>
+                        <div class="fw-bold text-dark fs-6" id="detailAuthorName">닉네임</div>
+                    </a>
+                </div>
+
+                <!-- 2. 게시글 본문 텍스트 -->
+                <div class="mb-3 text-dark small" id="detailContent" style="white-space: pre-line; line-height: 1.5;"></div>
+
+                <!-- 3. 대각선 X 박스 메인 이미지 영역 -->
+                <div class="mb-3">
+                    <div class="detail-image-box"></div>
+                </div>
+
+                <!-- 4. 네모란 아래 아이콘 영역 (# 아이콘이 comment 아이콘 바로 옆으로 이동) -->
+                <div class="d-flex align-items-center gap-3 pb-2 border-bottom text-dark small mb-3">
+                    <a href="/like" class="action-item text-decoration-none text-reset">
+                        <i class="icon">👍</i> <strong id="bottomLikeCount">2</strong>
+                    </a>
+                    <a href="/comment" class="action-item text-decoration-none text-reset">
+                        <i class="icon">💬</i> <strong id="bottomCommentCount">2</strong>
+                    </a>
+                    <a href="/view" class="action-item text-decoration-none text-reset" style="display: inline-flex; align-items: center; gap: 4px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" y1="9" x2="20" y2="9"></line>
+                            <line x1="4" y1="15" x2="20" y2="15"></line>
+                            <line x1="10" y1="3" x2="8" y2="21"></line>
+                            <line x1="16" y1="3" x2="14" y2="21"></line>
+                        </svg>
+                        <strong id="bottomViewCount">156</strong>
+                    </a>
+                </div>
+
+                <!-- 5. 댓글 목록 영역 -->
+                <div class="comments-section mb-3">
+                    <div class="fw-bold mb-3 text-dark small">댓글 <span id="mainCommentCount">8</span></div>
+
+                    <div class="d-flex flex-column gap-3" id="commentList">
+                        <!-- 댓글 1 -->
+                        <div class="comment-item">
+                            <div class="d-flex align-items-start gap-2">
+                                <div class="comment-profile-circle flex-shrink-0"></div>
+                                <div>
+                                    <div class="fw-bold small text-dark">여행좋아</div>
+                                    <div class="small text-secondary">사진 너무 이쁘네요!! 어디인가요?</div>
+                                    <div class="small text-muted mt-1 cursor-pointer" style="font-size: 0.75rem;">└ COMMENT</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 댓글 2 -->
+                        <div class="comment-item">
+                            <div class="d-flex align-items-start gap-2">
+                                <div class="comment-profile-circle flex-shrink-0"></div>
+                                <div>
+                                    <div class="fw-bold small text-dark">책읽는밤</div>
+                                    <div class="small text-secondary">분위기 최고에요! 저도 저런 시간 보내고 싶어요^~^</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. 하단 댓글 입력 영역 -->
+                <form id="commentForm" class="pt-2">
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control rounded-pill px-3 border-dark" id="commentInput" placeholder="" style="height: 38px;">
+                        <button type="submit" class="btn btn-outline-dark rounded-3 px-3 flex-shrink-0 fw-semibold" style="height: 38px; min-width: 80px;">등록하기</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle & main.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
