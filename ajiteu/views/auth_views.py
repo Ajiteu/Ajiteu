@@ -57,7 +57,8 @@ def login():
             session.clear()
             session['user_id'] = user.id
             print("goto====> main.index")
-            return redirect(url_for('post._list'))
+            # by breeze - 2026.08.06
+            return redirect(url_for('post._list', username_id=user.id))
         flash(error)
     print("login =====> none")
     return render_template('auth/login.html', form=form)
