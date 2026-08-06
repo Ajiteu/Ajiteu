@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    {% block content %}
     <div class="main-wrapper">
 
         <!-- 1. 좌측 프로필 패널 -->
@@ -28,7 +29,7 @@
             <hr class="divider">
 
             <div class="menu-section">
-                <a href="/write" class="btn-pill btn-write">글쓰기</a>
+                <a href="{{ url_for('post.create') }}" class="btn-pill btn-write">글쓰기</a>        {# 링크수정 #}
                 <a href="/profile" class="text-link">프로필 설정</a>
                 <a href="/my-posts" class="btn-pill btn-mypost">내가 쓴 글</a>
                 <div class="logout-section">
@@ -40,6 +41,7 @@
         </aside>
 
         <!-- 우측 컨테이너 -->
+
         <div class="right-container">
 
             <!-- 2. 상단 헤더 -->
@@ -55,16 +57,58 @@
             <div class="body-content">
 
                 <!-- 3. 중앙 게시글 카드 수직 스크롤 영역 -->
-                <main class="content-main">
-                    <div class="cards-scroll-area">
-                        <!-- main.js에 의해 동적으로 카드가 생성되거나 초기 예시 카드가 보여지는 그리드 -->
-                        <div class="cards-grid" id="postGrid">
-                            <!-- 초기 렌더링용 카드는 main.js에서 동적 생성됩니다 -->
+                <!-- 806 수정 및 아래 main파트 주석처리 -->
+                {% if post_list and post_list.items %}
+                    {% for post in post_list.items %}
+                        <div class="card-item" style="cursor: pointer;">
+                            <div class="card-top">
+                                <div class="author-box">
+                                    <div class="author-avatar"></div>
+                                    <div class="author-meta">
+                                        <div class="author-name">{{ post.user.username }}</div>
+                                        <div class="post-date">{{ post.create_date | datetime }}</div>
+                                    </div>
+                                </div>
+                                <button class="btn-more" data-id="{{ post.id }}">...</button>
+                            </div>
+                            <div class="card-middle">
+                                <div class="thumb-box"></div>
+                                <div class="text-box">
+                                    <div class="card-title" {{ post.content[:50] }}></div>
+                                    <div class="card-desc" {{ post.content[50:150] }}>...</div>
+                                </div>
+                            </div>
+                            <div class="card-button">
+                                <span class="action-item"><i class="icon">👍</i>{{ post.liker | length }}</span>
+                                <span class="action-item"><i class="icon">💬</i>{{ post.comment_set | length }}</span>
+                                <span class="action-item" style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"></svg>
+                                    <line x1="4" y1="9" x2="20" y2="9"></line>
+                                    <line x1="4" y1="15" x2="20" y2="15"></line>
+                                    <line x1="10" y1="3" x2="8" y2="21"></line>
+                                    <line x1="16" y1="3" x2="14" y2="21"></line>
+                                </span>
+                                0
+                            </div>
                         </div>
-                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #999;">
+                        게시글이 존재하지 않습니다.
+                    </p>
+                {% endif %}
+
+
+                <!-- <main class="content-main"> -->
+                    <!-- <div class="cards-scroll-area"> -->
+                        <!-- main.js에 의해 동적으로 카드가 생성되거나 초기 예시 카드가 보여지는 그리드 -->
+                        <!-- <div class="cards-grid" id="postGrid"> -->
+                            <!-- 초기 렌더링용 카드는 main.js에서 동적 생성됩니다 -->
+                        <!-- </div> -->
+                    <!-- </div> -->
 
                     <!-- 하단 고정 페이지네이션 -->
-                    <div class="pagination-bar">
+                    <!-- <div class="pagination-bar">
                         <span class="page-arrow">&lt;</span>
                         <span class="page-num active">1</span>
                         <span class="page-num">2</span>
@@ -73,7 +117,47 @@
                         <span class="page-num">10</span>
                         <span class="page-arrow">&gt;</span>
                     </div>
-                </main>
+                </main> -->
+                <ul>
+                    {% if post_list %}
+                    {% if post_list.has_prev %}
+                    <li>
+                       <a href="?page={{ post_list.prev_num }}">◁</a> 
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="#">◁</a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in post_list.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != post_list.page %}
+                                <li><a href="?page={{ page_num }}">{{ page_num }}</a></li>
+                            {% else %}
+                                <li>
+                                    <a href="#">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li>
+                                <a href="#" aria-disabled="true">...</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if post_list.has_next %}
+                    <li>
+                        <a href="?page={{ post_list.next_num }}">▻</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="#" tabindex="-1" aria-disabled="true">▻</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+                <!-- 806 수정end -->
 
                 <!-- 4. 우측 사이드바 -->
                 <aside class="sidebar-right">
@@ -114,7 +198,7 @@
             <button class="modal-item cancel" id="btnCloseModal">취소</button>
         </div>
     </div>
-
+    {% endblock %}
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
