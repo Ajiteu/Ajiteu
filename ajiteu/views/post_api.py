@@ -56,7 +56,7 @@ def _list():
 
     post_list = post_list.paginate(page=page, per_page=10)
 
-    return render_template('detail.html', post_list=post_list, page=page, kw=kw, so=so)
+    return render_template('main.html', post_list=post_list, page=page, kw=kw, so=so)
 
 
 
@@ -96,14 +96,14 @@ def create():
         db.session.commit()
 
         return redirect(url_for('post._list'))
-    return render_template('write.html', form=form)
+    return render_template('post_create.html', form=form)
 
 
 @bp.route('/detail/<int:post_id>/')
 def detail(post_id):
     form = PostForm()
     post = Post.query.get_or_404(post_id)
-    return render_template('detail.html', post=post, form=form)
+    return render_template('post_detail.html', post=post, form=form)
 
 @bp.route('modify/<int:post_id>/', methods=('GET', 'POST'))
 # @login_required
