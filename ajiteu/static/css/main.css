@@ -314,14 +314,24 @@ body {
 
 .modal-overlay.hidden { display: none; }
 
-.modal-content {
+/* .modal-content {
     background: white;
     border-radius: 12px;
     width: 280px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+} */
+
+.post-option-content {
+    background: white;
+    border-radius: 12px;
+    /* width: 280px; */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
+
 
 .modal-item {
     padding: 1rem;
