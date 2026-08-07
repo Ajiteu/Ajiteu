@@ -11,9 +11,13 @@ from werkzeug.utils import secure_filename
 
 
 bp = Blueprint('post', __name__, url_prefix='/post')
+@bp.route('/list/<int:username_id>')
+def _list(username_id):
+# @bp.route('/list/')
+# def _list():
+    user = User.query.get_or_404(username_id)
+    print("__________________list user.username ==> ", user.username)
 
-@bp.route('/list')
-def _list():
     page = request.args.get('page', type=int, default=1)
     #검색어
     kw = request.args.get('kw', type=str, default='')
@@ -56,11 +60,12 @@ def _list():
 
     post_list = post_list.paginate(page=page, per_page=10)
 
-    return render_template('main.html', post_list=post_list, page=page, kw=kw, so=so)
+    # return render_template('main.html', post_list=post_list, page=page, kw=kw, so=so)       # by breeze - 2026.08.06
+    return render_template('main.html', post_list=post_list, page=page, kw=kw, so=so, user=user)
 
 
 
-@bp.route('/create/', methods=('GET', 'POST'))
+@bp.route('/create', methods=('GET', 'POST'))
 def create():
     form = PostForm()
     if request.method == 'POST' and form.validate_on_submit():
