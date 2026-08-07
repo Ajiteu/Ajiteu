@@ -34,12 +34,12 @@
                 <!-- 닉네임 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
                     <!-- <div class="user-name fw-bold" id="userName">닉네임</div> -->
-                    <div class="user-name fw-bold" id="userName">{{ user.username }}</div>
+                    <div class="user-name fw-bold" id="userName">{{ user.nickname }}</div>
                 </a>
                 <!-- 프로필 소개 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
                     <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
-                    <div class="user-bio text-secondary small" id="userBio">{{ user_intro }}</div>
+                    <div class="user-bio text-secondary small" id="userBio">{{ user.user_intro }}</div>
                 </a>
                 {% endif %}
             </div>
@@ -47,8 +47,11 @@
             <hr class="divider my-4">
 
             <div class="menu-section d-flex flex-column align-items-center gap-3">
-                <button class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold"
-                    id="btnWriteOpen">글쓰기</button>
+                <!-- <button class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold"
+                    id="btnWriteOpen">글쓰기</button> -->
+                <a href="{{ url_for('post.create', username_id=user.id) if user else url_for('auth.login') }}"
+                    class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold">글쓰기</a>
+
                 <a href="/profile" class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
                     설정</a>
                 <a href="/my-posts" class="btn-pill btn-mypost w-100 text-decoration-none text-center fw-semibold">내가 쓴
@@ -101,7 +104,7 @@
                                     </div>
                                 </div>
                                 <div class="card-bottom">
-                                    <span class="action-item"><i class="icon">👍히히</i>{{ post.liker | length }}</span>
+                                    <span class="action-item"><i class="icon">👍</i>{{ post.liker | length }}</span>
                                     <span class="action-item"><i class="icon">💬</i>{{ post.comment_set | length
                                         }}</span>
                                     <span class="action-item"
@@ -171,14 +174,15 @@
                     {% endif %}
                 </main>
 
-                <!-- 새글 작성 팝업 모달 -->
+                {#<!-- 새글 작성 팝업 모달 -->
                 <div id="postModal" class="modal-overlay-write">
                     <div class="modal-write-card">
                         <div class="border-bottom pb-2 mb-3">
                             <h5 class="fw-bold m-0">새글 작성</h5>
                         </div>
-                        <form id="postForm" method="POST" action="{{ url_for('post.create') }}"
+                        <form id="postForm" method="POST" action="{{ url_for('post.create', username_id=user.id) }}"
                             enctype="multipart/form-data">
+                            {{ form.csrf_token }}
                             <div class="fw-bold mb-2 text-dark" id="modalUserNickname">닉네임</div>
                             <div class="mb-3">
                                 <textarea class="form-control" id="postContent" name="content" rows="8"
@@ -197,7 +201,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>#}
 
                 <!-- 4. 우측 사이드바 -->
                 <aside class="sidebar-right bg-white border-start p-4">
@@ -231,7 +235,7 @@
 
 
     {% endblock %}
-    <script>
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', () => {
             const postModal = document.getElementById('postModal');
             const btnWriteOpen = document.getElementById('btnWriteOpen');
@@ -256,10 +260,11 @@
                 }
             });
         });
-    </script>
+    </script> -->
     <!-- Bootstrap 5 JS Bundle & main.js -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
