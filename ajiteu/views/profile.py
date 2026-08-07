@@ -45,7 +45,7 @@ def detail(username_id):
             user.image_path = f'images/{today}/{filename}'
 
         db.session.commit()
-        flash('프로필이 저장되었습니다.')
-        return redirect(url_for('profile.detail', username_id=user.id))
+        # flash('프로필이 저장되었습니다.')
+        return redirect(url_for('post._list', username_id=user.id))
 
     return render_template('profile.html', user=user, form=form)

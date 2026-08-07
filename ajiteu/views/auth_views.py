@@ -56,7 +56,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            print("goto====> main.index")
+            print("goto====> post._list")
             # by breeze - 2026.08.06
             return redirect(url_for('post._list', username_id=user.id))
         flash(error)

@@ -34,3 +34,9 @@ class UserCreateForm(FlaskForm):
 class UserLoginForm(FlaskForm):
     username  = StringField('사용자 이름', validators=[DataRequired()])
     password = PasswordField('비밀번호', validators=[DataRequired()])
+
+
+class ProfileForm(FlaskForm):
+    nickname = StringField('닉네임', validators=[DataRequired(), Length(max=20)])
+    user_intro = TextAreaField('프로필 소개', validators=[Length(max=200)])
+    image = FileField('프로필 사진', validators=[FileAllowed(['jpg', 'jpeg', 'png'], '이미지 파일만 업로드 가능합니다.')])
