@@ -17,10 +17,12 @@ def signup():
         user = User.query.filter_by(username=form.username.data).first()
         if not user:
             # 2026.08.04 by breeze start
+            image_path = 'images/default.png'       # by breeze - 2026.08.07
             user = User(username=form.username.data,
                         password=generate_password_hash(form.password1.data),
                         email=form.email.data,
-                        nickname=form.username.data)
+                        nickname=form.username.data,
+                        image_path=image_path)      # by breeze - 2026.08.07
             # 2026.08.04 by breeze end
             db.session.add(user)
             db.session.commit()
