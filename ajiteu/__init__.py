@@ -18,11 +18,12 @@ def create_app():
 
     app.jinja_env.filters['datetime'] = format_datetime         #806추가
 
-    from .views import main_views, post_api, reply_api, comment_api, auth_views
+    from .views import main_views, post_api, reply_api, comment_api, auth_views, profile
     app.register_blueprint(main_views.bp)
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(post_api.bp)
     app.register_blueprint(reply_api.bp)
     app.register_blueprint(comment_api.bp)
+    app.register_blueprint(profile.bp)
 
     return app
