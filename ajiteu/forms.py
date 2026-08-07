@@ -7,8 +7,7 @@ from wtforms.validators import DataRequired, EqualTo, Email, Length
 class PostForm(FlaskForm):
     content = TextAreaField('내용', validators=[DataRequired('내용을 입력해주세요')])
     #다중이미지 선택
-    image = MultipleFileField('이미지 다중 업로드',
-                              validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], '이미지파일만 업로드 가능합니다')])
+    image = MultipleFileField('', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], '이미지파일만 업로드 가능합니다')])
     submit = SubmitField('등록하기')
 
 #댓글 등록
