@@ -3,11 +3,11 @@ from ajiteu.models import Post, Comment, Reply, User
 from ajiteu.forms import CommentForm
 from datetime import datetime
 from flask import Blueprint, url_for, request, redirect, render_template, g, flash
-
+from ajiteu.views.auth_views import login_required
 bp = Blueprint('comment', __name__, url_prefix='/comment')
 
 @bp.route('/create/<int:post_id>/', methods=('POST',))
-# @login_required
+@login_required
 def create(post_id):
     post = Post.query.get_or_404(post_id)
     form = CommentForm()
@@ -24,7 +24,7 @@ def create(post_id):
     return render_template('detail.html', post=post, form=form)
 
 @bp.route('/modify/<int:comment_id>/', methods=('GET', 'POST'))
-# @login_required
+@login_required
 def modify(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     if g.user != comment.user:
@@ -47,7 +47,7 @@ def modify(comment_id):
     return render_template('', comment=comment, form=form)
 
 @bp.route('/delete/<int:comment_id>/')
-# @login_required
+@login_required
 def delete(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     post_id = comment.post.id
@@ -59,7 +59,7 @@ def delete(comment_id):
     return redirect(url_for('post.detail', post_id=post_id))
 
 @bp.route('/liker/<int:comment_id>/')
-# @login_required
+@login_required
 def liker(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     post_id = comment.post.id

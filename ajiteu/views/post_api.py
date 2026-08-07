@@ -1,6 +1,6 @@
 from ajiteu import db
 from ajiteu.models import Post, Comment,Reply, User, post_liker
-#from team import login_required
+from ajiteu.views.auth_views import login_required
 from ajiteu.forms import PostForm
 from flask import Blueprint, render_template, url_for, redirect, request, g, flash, current_app
 from datetime import datetime
@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 
 bp = Blueprint('post', __name__, url_prefix='/post')
 @bp.route('/list/<int:username_id>')
+@login_required
 def _list(username_id):
 # @bp.route('/list/')
 # def _list():
@@ -65,13 +66,25 @@ def _list(username_id):
 
 
 
-@bp.route('/create', methods=('GET', 'POST'))
-def create():
+@bp.route('/create/<int:username_id>', methods=('GET', 'POST'))
+@login_required
+def create(username_id):
+    print("==============================create: ")
+    user = User.query.get_or_404(username_id)
     form = PostForm()
+
+    print(f"==============================create: {username_id}, {user.username}")
+    print(f"Request method: {request.method}")
+    print(f"Form errors: {form.errors}")
+
+
+    # if request.method == 'POST':
     if request.method == 'POST' and form.validate_on_submit():
         #이미지파트
         image_files = form.image.data
         image_paths = []
+
+        print("==============================POST if")
 
         #이미지 저장경로(오늘 날짜로 폴더 생성)
         today = datetime.now().strftime('%Y%m%d')
@@ -100,18 +113,21 @@ def create():
         db.session.add(post)
         db.session.commit()
 
-        return redirect(url_for('post._list'))
-    return render_template('post_create.html', form=form)
+        print("========================================post?")
+
+        return redirect(url_for('post._list', username_id=user.id))
+    return render_template('post_create.html', form=form, user=user)
 
 
 @bp.route('/detail/<int:post_id>/')
+@login_required
 def detail(post_id):
     form = PostForm()
     post = Post.query.get_or_404(post_id)
     return render_template('post_detail.html', post=post, form=form)
 
 @bp.route('modify/<int:post_id>/', methods=('GET', 'POST'))
-# @login_required
+@login_required
 def modify(post_id):
     post = Post.query.get_or_404(post_id)
     if g.user != post.user:
@@ -129,7 +145,7 @@ def modify(post_id):
     return render_template('edit.html', form=form)
 
 @bp.route('/delete/<int:post_id>/')
-# @login_required
+@login_required
 def delete(post_id):
     post = Post.query.get_or_404(post_id)
     if g.user != post.user:
@@ -143,7 +159,7 @@ def delete(post_id):
 #추후 수정-------------------------------
 
 @bp.route('/like/<int:post_id>/')
-# @login_required
+@login_required
 def like(post_id):
     post = Post.query.get_or_404(post_id)
 

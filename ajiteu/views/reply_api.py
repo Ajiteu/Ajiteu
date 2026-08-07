@@ -3,13 +3,13 @@ from datetime import datetime
 from ajiteu import db
 from ajiteu.forms import CommentForm, ReplyForm
 from ajiteu.models import Post, Comment, Reply, User
-# from team.views.auth_views import login_required
+from ajiteu.views.auth_views import login_required
 
 bp = Blueprint('reply', __name__, url_prefix='/reply')
 
 #comment의 답변(reply) 등록
 @bp.route('/create/comment/<int:comment_id>/', methods=('GET', 'POST'))
-# @login_required
+@login_required
 def create_reply(comment_id):
     form = ReplyForm()
     comment = Comment.query.get_or_404(comment_id)
@@ -22,7 +22,7 @@ def create_reply(comment_id):
 
 #comment의 답변(reply) 수정
 @bp.route('/modify/comment/<int:reply_id>/', methods=('GET', 'POST'))
-# @login_required
+@login_required
 def modify_reply(reply_id):
     reply = Reply.query.get_or_404(reply_id)
     if g.user != reply.user:
@@ -41,7 +41,7 @@ def modify_reply(reply_id):
 
 #comment의 답변(reply) 삭제
 @bp.route('/delete/comment/<int:reply_id>/')
-# @login_required
+@login_required
 def delete_reply(reply_id):
     reply = Reply.query.get_or_404(reply_id)
     post_id = reply.comment.post.id
