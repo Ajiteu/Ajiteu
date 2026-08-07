@@ -88,7 +88,7 @@ def create(username_id):
 
         #이미지 저장경로(오늘 날짜로 폴더 생성)
         today = datetime.now().strftime('%Y%m%d')
-        upload_folder = os.path.join(current_app.root_path, '', today)
+        upload_folder = os.path.join(current_app.root_path, 'static', 'photo', today)
         os.makedirs(upload_folder, exist_ok=True)
 
         #이미지 파일 존재시

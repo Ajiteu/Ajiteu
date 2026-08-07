@@ -1,108 +1,531 @@
 <!-- post_detail.html -->
+
 {% extends 'main.html' %}
 {% block content %}
-<!-- 게시글 보기 팝업 모달 -->
-<div id="postDetailModal" class="modal-overlay-detail">
-    <div class="modal-detail-card">
-        <!-- 우측 상단 옵션 버튼 및 닫기 버튼 헤더 영역 -->
-        <div class="detail-header-actions">
-            <div class="dropdown-detail-wrap">
-                <button class="btn-detail-more" id="btnDetailMore" type="button">...</button>
-                <!-- PDF 팝업 내림 메뉴 -->
-                <div class="detail-dropdown-menu hidden" id="detailDropdownMenu">
-                    <button class="dropdown-item danger" id="btnDetailDelete" type="button">삭제?</button>
-                    <button class="dropdown-item" id="btnDetailEdit" type="button">수정</button>
-                    <button class="dropdown-item" id="btnDetailGo" type="button">게시물로 이동</button>
-                    <button class="dropdown-item cancel" id="btnDetailCancel" type="button">취소</button>
+
+
+<!-- =========================================
+     게시글 상세 모달
+========================================= -->
+<div class="modal fade show" id="postDetailModal" tabindex="-1" aria-hidden="false"
+    style="display: block; background-color: rgba(0, 0, 0, 0.3);">
+
+    <div class="modal-dialog modal-dialog-centered post-detail-dialog">
+
+        <div class="modal-content post-detail-content">
+
+
+            <!-- =========================================
+                 상단 버튼
+            ========================================= -->
+            <div class="modal-header border-0 flex-shrink-0 py-2">
+                <!-- 오른쪽 영역 -->
+                <div class="ms-auto d-flex align-items-center gap-2">
+
+                    <!-- 더보기 -->
+                    
+                    {#{% if g.user == post.user %}#}
+                    <div class="dropdown">
+
+                        <button class="btn btn-link text-dark text-decoration-none p-1" type="button" id="btnDetailMore"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            ⋯
+                        </button>
+
+                        <!-- 더보기 메뉴 -->
+                        
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="btnDetailMore">
+
+                            <!-- 삭제 -->
+                            <li>
+                                <button class="dropdown-item text-danger" id="btnDeletePost" type="button">
+                                    삭제
+                                </button>
+                            </li>
+
+                            <!-- 수정 -->
+                            <li>
+                                <button class="dropdown-item" id="btnEditPost" type="button">
+                                    수정
+                                </button>
+                            </li>
+
+                            <!-- 게시물로 이동 -->
+                            <li>
+                                <button class="dropdown-item" id="btnGoPost" type="button">
+
+                                    게시물로 이동
+
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    {#{% endif %}#}
+
+                    <!-- 닫기 -->
+                    <a href="{{ url_for('post._list', username_id=post.user.id) }}" class="btn-close"
+                        aria-label="Close">
+                    </a>
                 </div>
             </div>
-            <button class="btn-close-detail" id="btnCloseDetail" type="button">✕</button>
-        </div>
 
-        <!-- 더보기(...) 팝업 모달 -->
-        <div id="postOptionModal" class="modal-overlay hidden">
-            <div class="modal-content border border-dark rounded-3 overflow-hidden shadow">
-                <button class="modal-item danger border-bottom border-light" id="btnDeletePost"
-                    type="button">삭제</button>
-                <button class="modal-item border-bottom border-light" id="btnEditPost" type="button">수정</button>
-                <button class="modal-item border-bottom border-light" id="btnGoPost" type="button">게시물로 이동</button>
-                <button class="modal-item cancel" id="btnCloseModal" type="button">취소</button>
-            </div>
-        </div>
+            <!-- =========================================
+                 게시글 내용
+                 이 부분만 스크롤
+            ========================================= -->
+            <div class="modal-body overflow-auto px-4 pt-0 pb-3">
 
-        <div class="modal-detail-body">
+                <!-- =====================================
+                     1. 프로필
+                ====================================== -->
+                <div class="d-flex align-items-center gap-3 mb-2">
 
-            <!-- 1. 프로필 동그라미 및 닉네임 (링크 적용) -->
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <a href="/profile" class="text-decoration-none text-reset d-flex align-items-center gap-3">
-                    <div class="detail-profile-circle flex-shrink-0"></div>
-                    <div class="fw-bold text-dark fs-6" id="detailAuthorName">{{ post.user.username }}</div>
-                </a>
-            </div>
+                    <a href="/profile" class="text-decoration-none text-reset d-flex align-items-center gap-3">
+                        <!-- 프로필 이미지 자리 -->
+                        <div class="detail-profile-circle
+                                    bg-secondary
+                                    bg-opacity-25
+                                    rounded-circle
+                                    flex-shrink-0">
+                        </div>
 
-            <!-- 2. 게시글 본문 텍스트 -->
-            <div class="mb-3 text-dark small" id="detailContent" style="white-space: pre-line; line-height: 1.5;">{{
-                post.content }}</div>
+                        <!-- 닉네임 -->
+                        <div>
 
-            <!-- 3. 대각선 X 박스 메인 이미지 영역 -->
-            <div class="mb-3">
-                <div class="detail-image-box"></div>
-            </div>
+                            <div class="fw-bold text-dark fs-6" id="detailAuthorName">
 
-            <!-- 4. 네모란 아래 아이콘 영역 (# 아이콘이 comment 아이콘 바로 옆으로 이동) -->
-            <div class="d-flex align-items-center gap-3 pb-2 border-bottom text-dark small mb-3">
-                <a href="/like" class="action-item text-decoration-none text-reset">
-                    <i class="icon">👍</i> <strong id="bottomLikeCount">{{ post.liker | length }}</strong>
-                </a>
-                <a href="/comment" class="action-item text-decoration-none text-reset">
-                    <i class="icon">💬</i> <strong id="bottomCommentCount">{{ post.comment_set | length }}</strong>
-                </a>
-                <a href="/view" class="action-item text-decoration-none text-reset"
-                    style="display: inline-flex; align-items: center; gap: 4px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="4" y1="9" x2="20" y2="9"></line>
-                        <line x1="4" y1="15" x2="20" y2="15"></line>
-                        <line x1="10" y1="3" x2="8" y2="21"></line>
-                        <line x1="16" y1="3" x2="14" y2="21"></line>
-                    </svg>
-                    <strong id="bottomViewCount">156</strong>
-                </a>
-            </div>
+                                {% if post.user.nickname %}
 
-            <!-- 5. 댓글 목록 영역 -->
-            <div class="comments-section mb-3">
-                <div class="fw-bold mb-3 text-dark small">댓글 <span id="mainCommentCount">{{ post.comment_set | length
-                        }}</span></div>
+                                {{ post.user.nickname }}
 
-                <div class="d-flex flex-column gap-3" id="commentList">
-                    {% for comment in post.comment_set %}
-                    <div class="comment-item">
-                        <div class="d-flex align-items-start gap-2">
-                            <div class="comment-profile-circle flex-shrink-0"></div>
-                            <div>
-                                <div class="fw-bold small text-dark">{{ comment.user.username }}</div>
-                                <div class="small text-secondary">{{ comment.content }}</div>
-                                <div class="small text-muted mt-1 cursor-pointer" style="font-size: 0.75rem;">└ COMMENT
+                                {% else %}
+
+                                {{ post.user.username }}
+
+                                {% endif %}
+
+                            </div>
+
+                            <!-- 작성 날짜 -->
+                            <small class="text-muted">
+
+                                {{ post.create_date | datetime }}
+
+                            </small>
+
+                        </div>
+                    </a>
+                </div>
+
+                <!-- =====================================
+                     2. 게시글 본문
+                ====================================== -->
+                <div class="mb-3 text-dark small" id="detailContent" style="white-space: pre-line; line-height: 1.5;">{{
+                    post.content }}</div>
+
+                <!-- =====================================
+                        3. 게시글 이미지
+                ====================================== -->
+
+                {% if post.image_path %}
+
+                {% set image_list = post.image_path.split(',') %}
+
+                <div class="mb-3 post-image-area">
+
+                    <div id="postImageCarousel" class="carousel slide" data-bs-ride="false">
+                        <!-- 이미지 영역 -->
+                        <div class="carousel-inner rounded">
+
+                            {% for image in image_list %}
+
+                            <div class="carousel-item {% if loop.first %}active{% endif %}">
+
+                                <img src="{{ url_for('static', filename=image.strip()) }}"
+                                    class="d-block w-100 post-detail-image" alt="게시글 이미지 {{ loop.index }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- 이미지가 2장 이상일 때만 좌우 버튼 표시 -->
+                        {% if image_list | length > 1 %}
+
+                        <!-- 이전 버튼 -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#postImageCarousel"
+                            data-bs-slide="prev">
+
+                            <span class="carousel-control-prev-icon" aria-hidden="true">
+                            </span>
+
+                            <span class="visually-hidden">
+                                이전
+                            </span>
+                        </button>
+
+                        <!-- 다음 버튼 -->
+                        <button class="carousel-control-next" type="button" data-bs-target="#postImageCarousel"
+                            data-bs-slide="next">
+
+                            <span class="carousel-control-next-icon" aria-hidden="true">
+                            </span>
+
+                            <span class="visually-hidden">
+                                다음
+                            </span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- =====================================
+                     4. 좋아요 / 댓글 / 조회수
+                ====================================== -->
+                <div class="d-flex align-items-center gap-3
+                            pb-3 mb-3
+                            border-bottom
+                            text-dark small">
+
+                    <!-- 좋아요 -->
+                    <a href="#" class="d-inline-flex align-items-center gap-1
+                              text-decoration-none text-reset">
+
+                        <span>👍</span>
+
+                        <strong id="bottomLikeCount">
+                            {{ post.liker | length }}
+                        </strong>
+                    </a>
+
+                    <!-- 댓글 -->
+                    <a href="#" class="d-inline-flex align-items-center gap-1
+                              text-decoration-none text-reset">
+
+                        <span>💬</span>
+
+                        <strong id="bottomCommentCount">
+                            {{ post.comment_set | length }}
+                        </strong>
+                    </a>
+
+                    <!-- 조회수 -->
+                    <div class="d-inline-flex align-items-center gap-1 ms-auto">
+                        <!-- 눈 아이콘 -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+
+                            <circle cx="12" cy="12" r="3">
+                            </circle>
+                        </svg>
+                        <strong id="bottomViewCount">
+
+                            156
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <!-- =====================================
+                     5. 댓글
+                ====================================== -->
+                <div class="comments-section">
+
+                    <!-- 댓글 개수 -->
+                    <div class="fw-bold mb-3 text-dark small">
+
+                        댓글
+
+                        <span id="mainCommentCount">
+
+                            {{ post.comment_set | length }}
+
+                        </span>
+
+                    </div>
+
+                    <!-- 댓글 목록 -->
+                    <div class="d-flex flex-column gap-3" id="commentList">
+
+                        {% for comment in post.comment_set %}
+
+                        <div class="comment-item">
+
+                            <div class="d-flex align-items-start gap-2">
+
+                                <!-- 댓글 프로필 -->
+                                <div class="comment-profile-circle
+                                            bg-secondary
+                                            bg-opacity-25
+                                            rounded-circle
+                                            flex-shrink-0">
+                                </div>
+
+                                <!-- 댓글 정보 -->
+                                <div class="flex-grow-1">
+
+                                    <!-- 댓글 작성자 -->
+                                    <div class="fw-bold small text-dark">
+
+                                        {% if comment.user.nickname %}
+
+                                        {{ comment.user.nickname }}
+
+                                        {% else %}
+
+                                        {{ comment.user.username }}
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    <!-- 댓글 내용 -->
+                                    <div class="small text-secondary text-break">
+
+                                        {{ comment.content }}
+
+                                    </div>
+
+                                    <!-- 답글 -->
+                                    <button type="button" class="btn btn-link
+                                                   text-muted
+                                                   text-decoration-none
+                                                   p-0 mt-1">
+
+                                        <small>
+                                            └ COMMENT
+                                        </small>
+
+                                    </button>
+
                                 </div>
                             </div>
                         </div>
+
+                        {% endfor %}
+
                     </div>
-                    {% endfor %}
+
                 </div>
+
             </div>
 
-            <!-- 6. 하단 댓글 입력 영역 -->
-            <form id="commentForm" class="pt-2">
-                <div class="d-flex gap-2">
-                    <input type="text" class="form-control rounded-pill px-3 border-dark" id="commentInput"
-                        placeholder="" style="height: 38px;">
-                    <button type="submit" class="btn btn-outline-dark rounded-3 px-3 flex-shrink-0 fw-semibold"
-                        style="height: 38px; min-width: 80px;">등록하기</button>
-                </div>
-            </form>
+            <!-- =========================================
+                 6. 댓글 입력
+                 모달 맨 아래 고정
+            ========================================= -->
+            <div class="border-top px-4 py-3 flex-shrink-0">
+
+                <form id="commentForm">
+
+                    <div class="d-flex gap-2">
+
+                        <!-- 댓글 입력창 -->
+                        <input type="text" class="form-control rounded-pill px-3 border-dark" id="commentInput"
+                            placeholder="댓글을 입력해주세요." autocomplete="off">
+
+                        <!-- 등록 -->
+                        <button type="submit" class="btn btn-outline-dark
+                                       rounded-3
+                                       px-3
+                                       flex-shrink-0
+                                       fw-semibold">
+
+                            등록하기
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
 
         </div>
+
     </div>
+
 </div>
+
+<!-- =========================================
+     게시글 상세 모달 크기
+========================================= -->
+<style>
+    /* =====================================
+       프로필 사진
+    ====================================== */
+
+    .detail-profile-circle {
+        width: 44px;
+        height: 44px;
+    }
+
+
+    .comment-profile-circle {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* =====================================
+       PC
+
+       내용이 많든 적든
+       모달 크기는 동일
+    ====================================== */
+
+    .post-detail-dialog {
+        width: 60vw;
+        max-width: none;
+
+        height: 80vh;
+
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    .post-detail-content {
+        height: 80vh;
+
+        overflow: hidden;
+    }
+
+    /* =====================================
+       게시글 이미지
+
+       이미지가 커도 모달 자체가
+       커지지 않도록 제한
+    ====================================== */
+
+    .post-image-area {
+        width: 100%;
+    }
+
+
+    .post-detail-image {
+        width: 100%;
+
+        height: 42vh;
+
+        object-fit: contain;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        filter: brightness(0) opacity(0.8);
+    }
+
+    /* =====================================
+       태블릿
+       Bootstrap lg 미만
+    ====================================== */
+
+    @media (max-width: 991.98px) {
+
+        .post-detail-dialog {
+
+            width: 80vw;
+
+            height: 85vh;
+
+        }
+
+
+        .post-detail-content {
+
+            height: 85vh;
+
+        }
+
+
+        .post-detail-image {
+
+            max-height: 40vh;
+
+        }
+
+    }
+
+    /* =====================================
+       모바일
+       Bootstrap md 미만
+    ====================================== */
+
+    @media (max-width: 767.98px) {
+
+        .post-detail-dialog {
+
+            width: 95vw;
+
+            height: 90vh;
+
+            margin-left: auto;
+            margin-right: auto;
+
+        }
+
+
+        .post-detail-content {
+
+            height: 90vh;
+
+        }
+
+
+        .post-detail-image {
+
+            max-height: 35vh;
+
+        }
+
+
+        .modal-body {
+
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+
+        }
+
+    }
+
+    /* =====================================
+       아주 작은 모바일
+    ====================================== */
+
+    @media (max-width: 575.98px) {
+
+        .post-detail-dialog {
+
+            width: 96vw;
+
+            height: 92vh;
+
+        }
+
+        .post-detail-content {
+
+            height: 92vh;
+
+        }
+
+        .detail-profile-circle {
+
+            width: 40px;
+            height: 40px;
+
+        }
+
+        .comment-profile-circle {
+
+            width: 32px;
+            height: 32px;
+
+        }
+
+    }
+</style>
+
 {% endblock %}
