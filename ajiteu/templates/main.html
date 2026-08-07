@@ -47,19 +47,21 @@
             <hr class="divider my-4">
 
             <div class="menu-section d-flex flex-column align-items-center gap-3">
-                <button class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold"
-                    id="btnWriteOpen">글쓰기</button>
+                <a href="{{ url_for('post.create', username_id=user.id) if user else url_for('auth.login') }}"
+                    class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold">글쓰기</a>
                 <!-- by breeze - 2026.08.07 start -->
                 <!-- <a href="/profile" class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
                     설정</a> -->
-                <a href="{{ url_for('profile.detail', username_id=user.id) }}" class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
+                <a href="{{ url_for('profile.detail', username_id=user.id) }}"
+                    class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
                     설정</a>
                 <!-- by breeze - 2026.08.07 end -->
                 <a href="/my-posts" class="btn-pill btn-mypost w-100 text-decoration-none text-center fw-semibold">내가 쓴
                     글</a>
                 <div class="logout-section mt-auto pt-3">
                     <!-- <a href="/logout" class="text-link logout text-decoration-none text-danger fw-semibold">로그아웃</a> -->
-                    <a href="{{ url_for('auth.logout') }}" class="text-link logout text-decoration-none text-danger fw-semibold">로그아웃</a>
+                    <a href="{{ url_for('auth.logout') }}"
+                        class="text-link logout text-decoration-none text-danger fw-semibold">로그아웃</a>
                 </div>
             </div>
         </aside>
