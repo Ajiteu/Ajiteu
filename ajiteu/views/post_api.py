@@ -8,6 +8,7 @@ from sqlalchemy import func, distinct
 import os
 import uuid
 from werkzeug.utils import secure_filename
+# from flask_login import current_user
 
 
 bp = Blueprint('post', __name__, url_prefix='/post')
@@ -176,3 +177,16 @@ def like(post_id):
 
     return redirect(url_for('post.detail', post_id=post_id))
 
+# sinae 808 홈화면 모든글 보여주기
+
+@bp.route('/', methods=['GET'])
+def index():
+    page = request.args.get('page', 1, type=int)
+    post_list = Post.query.paginate(page=page, per_page=10)
+    return render_template('main.html', post_list=post_list)
+
+@bp.route('/user/<int:user_id>', methods=['GET'])
+def user_posts(user_id):
+    page = request.args.get('page', 1, type=int)
+    post_list = Post.query.filter_by(user_id=user_id).paginate(page=page, per_page=10)
+    return render_template('main.html', post_list=post_list)
