@@ -27,7 +27,7 @@
                  style="width:110px; height:110px;">
               {% if user.image_path %}
               
-              <img id="profileImg" src="{{ url_for('static', filename=user.image_path) }}" alt="프로필 사진"
+              <img id="profileImg" src="{{ url_for('static', filename=g.user.image_path) }}" alt="프로필 사진"
                    class="w-100 h-100" style="object-fit: cover;">
               <span id="photoPlaceholder" class="small text-secondary text-center px-2" hidden>사진 이미지</span>
               {% else %}

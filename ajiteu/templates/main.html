@@ -20,12 +20,13 @@
 
         <!-- 1. 좌측 프로필 패널 -->
         <aside class="sidebar-left bg-white border-end p-4 d-flex flex-column flex-shrink-0">
+
             <div class="profile-section d-flex flex-column align-items-center text-center">
-                {% if user %}
+                {% if g.user %}
                 <!-- 프로필 이미지 동그라미 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
                     <div class="avatar-circle overflow-hidden mb-3">
-                        <img src="{{ user.image_path and url_for('static', filename=user.image_path) or url_for('static', filename='images/default.png') }}"
+                        <img src="{{ g.user.image_path and url_for('static', filename=g.user.image_path) or url_for('static', filename='images/default.png') }}"
                             alt="프로필" class="w-100 h-100 object-fit-cover"
                             data-default-img="{{ url_for('static', filename='images/default.png') }}"
                             onerror="this.onerror=null; this.src=this.dataset.defaultImg;">
@@ -34,12 +35,12 @@
                 <!-- 닉네임 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
                     <!-- <div class="user-name fw-bold" id="userName">닉네임</div> -->
-                    <div class="user-name fw-bold" id="userName">{{ user.nickname }}</div>
+                    <div class="user-name fw-bold" id="userName">{{ g.user.nickname }}</div>
                 </a>
                 <!-- 프로필 소개 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
                     <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
-                    <div class="user-bio text-secondary small" id="userBio">{{ user.user_intro }}</div>
+                    <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro }}</div>
                 </a>
                 {% endif %}
             </div>
@@ -47,17 +48,36 @@
             <hr class="divider my-4">
 
             <div class="menu-section d-flex flex-column align-items-center gap-3">
-                <a href="{{ url_for('post.create', username_id=user.id) if user else url_for('auth.login') }}"
+                {% if g.user %}
+                <a href="{{ url_for('post.create', username_id=g.user.id) if g.user else url_for('auth.login') }}"
                     class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold">글쓰기</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                    class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold">글쓰기</a>
+                {% endif %}
                 <!-- by breeze - 2026.08.07 start -->
                 <!-- <a href="/profile" class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
                     설정</a> -->
-                <a href="{{ url_for('profile.detail', username_id=user.id) }}"
+
+                {% if g.user %}
+                <a href="{{ url_for('profile.detail', username_id=g.user.id) }}"
                     class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
                     설정</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                    class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필 설정</a>
+                {% endif %}
+
                 <!-- by breeze - 2026.08.07 end -->
-                <a href="/my-posts" class="btn-pill btn-mypost w-100 text-decoration-none text-center fw-semibold">내가 쓴
+
+                {% if g.user %}
+                <a href="{{ url_for('post.user_posts', user_id=g.user.id) }}"
+                    class="btn-pill btn-mypost w-100 text-decoration-none text-center fw-semibold">내가 쓴
                     글</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                    class="btn-pill btn-mypost w-100 text-decoration-none text-center fw-semibold">내가 쓴 글</a>
+                {% endif %}
                 <div class="logout-section mt-auto pt-3">
                     <!-- <a href="/logout" class="text-link logout text-decoration-none text-danger fw-semibold">로그아웃</a> -->
                     <a href="{{ url_for('auth.logout') }}"
@@ -71,7 +91,9 @@
 
             <!-- 2. 상단 헤더 -->
             <header class="search-header">
-                <h1 class="community-title">Ajiteu</h1>
+                <!-- sinae : 808 '아지트' 눌렀을때 메인리스트 보여주기 -->
+                <h1 class="community-title"><a href="{{ url_for('post._list', username_id=g.user.id) }}"
+                        style="text-decoration: none;">아지트</a></h1>
                 <div class="search-box-wrap">
                     <input type="text" id="searchInput" class="search-input" placeholder="검색어를 입력하세요...">
                     <button id="searchBtn" class="search-btn">검색</button>
@@ -82,62 +104,99 @@
             <div class="body-content d-flex flex-grow-1 overflow-hidden">
 
                 <!-- 3. 중앙 게시글 카드 수직 스크롤 영역 -->
+                <!-- sinae : 808 프로필, 닉네임 누르면 프로필설정으로 가?, 좋아요, 댓글, 조회수부분 추후 코드넣기 원래코드 백업해두었음 -->
                 <main class="content-main flex-grow-1 p-4 d-flex flex-column">
                     <div class="cards-scroll-area flex-grow-1 overflow-y-auto pe-2">
                         <!-- main.js에 의해 동적으로 생성되는 2열 그리드 -->
                         <div class="cards-grid" id="postGrid">
                             {% if post_list and post_list.items %}
                             {% for post in post_list.items %}
-                            <a href="{{ url_for('post.detail', post_id=post.id) }}"
-                                class="card-item text-decoration-none text-reset" style="cursor: pointer;">
+                            <!-- 카드 아이템: div로 변경, onclick으로 포스트 상세 페이지로 이동 -->
+                            <div class="card-item text-decoration-none text-reset" style="cursor: pointer;"
+                                onclick="location.href='{{ url_for('post.detail', post_id=post.id) }}'">
+                                <!-- 카드 상단: 사용자 프로필 정보 -->
                                 <div class="card-top">
                                     <div class="author-box">
-                                        <div class="author-avatar">{{ post.user.image_path }}</div>
+                                        <!-- 사용자 프로필 이미지 링크 (클릭 전파 방지) -->
+                                        <a href="{{ url_for('post.user_posts', user_id=post.user.id) }}"
+                                            class="author-avatar" onclick="event.stopPropagation()">
+                                            <img src="{{ post.user.image_path and url_for('static', filename=post.user.image_path) or url_for('static', filename='images/default.png') }}"
+                                                alt="프로필" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </a>
                                         <div class="author-meta">
-                                            <div class="author-name">{{ post.user.nickname }}</div>
+                                            <!-- 사용자 닉네임 링크 (클릭 전파 방지) -->
+                                            <a href="{{ url_for('post.user_posts', user_id=post.user.id) }}"
+                                                class="author-name" onclick="event.stopPropagation()">
+                                                {{ post.user.nickname }}
+                                            </a>
+                                            <!-- 게시물 작성 날짜 -->
                                             <div class="post-date">{{ post.create_date | datetime }}</div>
                                         </div>
                                     </div>
-                                    <button class="btn-more" data-id="{{ post.id }}" type="button">...</button>
+                                    <!-- 더보기 버튼 (클릭 전파 방지) -->
+                                    <button class="btn-more" data-id="{{ post.id }}" type="button"
+                                        onclick="event.stopPropagation()">...</button>
                                 </div>
+
+                                <!-- 카드 중간: 이미지 및 텍스트 내용 -->
                                 <div class="card-middle">
                                     {% if post.image_path %}
+                                    <!-- 게시물 이미지 처리 (여러 이미지는 쉼표로 구분) -->
                                     {% set image_list = post.image_path.split(',') %}
-                                    <div class="thumb-box"><img src="{{ url_for('static', filename=image_list[0]) }}" alt="thumbnail" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                                    <div class="thumb-box">
+                                        <img src="{{ url_for('static', filename=image_list[0]) }}" alt="thumbnail"
+                                            style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
                                     {% endif %}
 
+                                    <!-- 게시물 텍스트 내용 (최대 150자까지 표시) -->
                                     <div class="text-box">
-                                        <!-- <div class="card-title">{{ post.content[:10] }}</div> -->
                                         <div class="card-desc">{{ post.content[:150] }}...</div>
                                     </div>
                                 </div>
+
+                                <!-- 카드 하단: 좋아요, 댓글, 조회수 -->
                                 <div class="card-bottom">
-                                    <span class="action-item"><i class="icon">👍</i>{{ post.liker | length }}</span>
-                                    <span class="action-item"><i class="icon">💬</i>{{ post.comment_set | length
-                                        }}</span>
+                                    <!-- 좋아요 버튼 (클릭 전파 방지) -->
+                                    <button type="button" class="action-item like-btn" data-post-id="{{ post.id }}"
+                                        onclick="event.stopPropagation()"
+                                        style="border: none; background: none; cursor: pointer; padding: 0;">
+                                        <i class="icon">👍</i><span class="like-count">{{ post.liker | length }}</span>
+                                    </button>
+
+                                    <!-- 댓글 버튼 (클릭 전파 방지) -->
+                                    <a href="{{ url_for('post.detail', post_id=post.id) }}#comments" class="action-item"
+                                        onclick="event.stopPropagation()"
+                                        style="text-decoration: none; color: inherit;">
+                                        <i class="icon">💬</i><span class="comment-count">{{ post.comment_set | length
+                                            }}</span>
+                                    </a>
+
+                                    <!-- 조회수 (읽기 전용) -->
                                     <span class="action-item"
                                         style="display: inline-flex; align-items: center; gap: 4px;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round"
                                             style="vertical-align: middle;">
-                                            <line x1="4" y1="9" x2="20" y2="9"></line>
-                                            <line x1="4" y1="15" x2="20" y2="15"></line>
-                                            <line x1="10" y1="3" x2="8" y2="21"></line>
-                                            <line x1="16" y1="3" x2="14" y2="21"></line>
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
-                                        0
+                                        <span class="view-count">{{ post.view_count }}</span>
                                     </span>
                                 </div>
-                            </a>
+                            </div>
                             {% endfor %}
                             {% else %}
+                            <!-- 게시물이 없을 때 표시되는 메시지 -->
                             <p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #999;">
                                 게시글이 존재하지 않습니다.
                             </p>
                             {% endif %}
                         </div>
                     </div>
+
+
 
                     <!-- 하단 고정 페이지네이션 -->
                     {% if post_list %}
