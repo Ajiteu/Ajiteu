@@ -18,13 +18,14 @@
             <!-- =========================================
                  상단 버튼
             ========================================= -->
+            <!-- sinae : 808 -->
             <div class="modal-header border-0 flex-shrink-0 py-2">
                 <!-- 오른쪽 영역 -->
                 <div class="ms-auto d-flex align-items-center gap-2">
 
                     <!-- 더보기 -->
-                    
-                    {#{% if g.user == post.user %}#}
+
+                    {% if g.user == post.user %}
                     <div class="dropdown">
 
                         <button class="btn btn-link text-dark text-decoration-none p-1" type="button" id="btnDetailMore"
@@ -33,22 +34,25 @@
                         </button>
 
                         <!-- 더보기 메뉴 -->
-                        
+
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="btnDetailMore">
 
                             <!-- 삭제 -->
-                            <li>
+                            <!-- <li>
                                 <button class="dropdown-item text-danger" id="btnDeletePost" type="button">
                                     삭제
                                 </button>
-                            </li>
+                            </li> -->
+                            <a href="javascript:void(0)" data-uri="{{ url_for('post.delete', post_id=post.id) }}", class="delete small dropdown-item text-danger">삭제</a>
 
                             <!-- 수정 -->
-                            <li>
+                            <!-- <li>
                                 <button class="dropdown-item" id="btnEditPost" type="button">
                                     수정
                                 </button>
-                            </li>
+                            </li> -->
+                            <a href="{{ url_for('post.modify', post_id=post.id) }}", class="small dropdown-item">수정</a>
+
 
                             <!-- 게시물로 이동 -->
                             <li>
@@ -60,7 +64,7 @@
                             </li>
                         </ul>
                     </div>
-                    {#{% endif %}#}
+                    {% endif %}
 
                     <!-- 닫기 -->
                     <a href="{{ url_for('post._list', username_id=post.user.id) }}" class="btn-close"
@@ -78,44 +82,24 @@
                 <!-- =====================================
                      1. 프로필
                 ====================================== -->
-                <div class="d-flex align-items-center gap-3 mb-2">
-
-                    <a href="/profile" class="text-decoration-none text-reset d-flex align-items-center gap-3">
-                        <!-- 프로필 이미지 자리 -->
-                        <div class="detail-profile-circle
-                                    bg-secondary
-                                    bg-opacity-25
-                                    rounded-circle
-                                    flex-shrink-0">
-                        </div>
-
-                        <!-- 닉네임 -->
-                        <div>
-
-                            <div class="fw-bold text-dark fs-6" id="detailAuthorName">
-
-                                {% if post.user.nickname %}
-
-                                {{ post.user.nickname }}
-
-                                {% else %}
-
-                                {{ post.user.username }}
-
-                                {% endif %}
-
-                            </div>
-
-                            <!-- 작성 날짜 -->
-                            <small class="text-muted">
-
-                                {{ post.create_date | datetime }}
-
-                            </small>
-
-                        </div>
+                <div class="author-box">
+                    <!-- 사용자 프로필 이미지 링크 (클릭 전파 방지) -->
+                    <a href="{{ url_for('post.user_posts', user_id=post.user.id) }}" class="author-avatar"
+                        onclick="event.stopPropagation()">
+                        <img src="{{ post.user.image_path and url_for('static', filename=post.user.image_path) or url_for('static', filename='images/default.png') }}"
+                            alt="프로필" style="width: 100%; height: 100%; object-fit: cover;">
                     </a>
+                    <div class="author-meta">
+                        <!-- 사용자 닉네임 링크 (클릭 전파 방지) -->
+                        <a href="{{ url_for('post.user_posts', user_id=post.user.id) }}" class="author-name"
+                            onclick="event.stopPropagation()">
+                            {{ post.user.nickname }}
+                        </a>
+                        <!-- 게시물 작성 날짜 -->
+                        <div class="post-date">{{ post.create_date | datetime }}</div>
+                    </div>
                 </div>
+
 
                 <!-- =====================================
                      2. 게시글 본문
@@ -232,6 +216,10 @@
                 <!-- =====================================
                      5. 댓글
                 ====================================== -->
+
+                <!-- sinae : 808 댓글부분 전체 수정 -->
+
+
                 <div class="comments-section">
 
                     <!-- 댓글 개수 -->
@@ -253,40 +241,49 @@
                         {% for comment in post.comment_set %}
 
                         <div class="comment-item">
-
                             <div class="d-flex align-items-start gap-2">
 
                                 <!-- 댓글 프로필 -->
-                                <div class="comment-profile-circle
+                                <!-- <div class="comment-profile-circle
                                             bg-secondary
                                             bg-opacity-25
                                             rounded-circle
                                             flex-shrink-0">
-                                </div>
+                                </div> -->
+                                <a href="{{ url_for('post.user_posts', user_id=comment.user.id) }}"
+                                    class="comment-profile-circle bg-secondary bg-opacity-25 rounded-circle flex-shrink-0"
+                                    onclick="event.stopPropagation()"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <img src="{{ comment.user.image_path and url_for('static', filename=comment.user.image_path) or url_for('static', filename='images/default.png') }}"
+                                        alt="프로필"
+                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                </a>
 
                                 <!-- 댓글 정보 -->
                                 <div class="flex-grow-1">
 
                                     <!-- 댓글 작성자 -->
-                                    <div class="fw-bold small text-dark">
-
+                                    <!-- 바로 아래 div 주석처리 -->
+                                    {#<div class="fw-bold small text-dark">
                                         {% if comment.user.nickname %}
-
                                         {{ comment.user.nickname }}
-
                                         {% else %}
-
                                         {{ comment.user.username }}
-
                                         {% endif %}
-
-                                    </div>
+                                    </div>#}
+                                    <a href="{{ url_for('post.user_posts', user_id=comment.user.id) }}"
+                                        class="fw-bold small text-dark text-decoration-none"
+                                        onclick="event.stopPropagation()">
+                                        {% if comment.user.nickname %}
+                                        {{ comment.user.nickname }}
+                                        {% else %}
+                                        {{ comment.user.username }}
+                                        {% endif %}
+                                    </a>
 
                                     <!-- 댓글 내용 -->
                                     <div class="small text-secondary text-break">
-
-                                        {{ comment.content }}
-
+                                        {{ comment.content | trim }}
                                     </div>
 
                                     <!-- 답글 -->
@@ -318,24 +315,31 @@
                  모달 맨 아래 고정
             ========================================= -->
             <div class="border-top px-4 py-3 flex-shrink-0">
-
-                <form id="commentForm">
-
+                <!-- sinae : 808 댓글입력 -->
+                <form method="POST" action="{{ url_for('comment.create', post_id=post.id) }}" id="commentForm">
+                    {{ comment_form.csrf_token }}
+                    {% if comment_form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field, errors in comment_form.errors.items() %}
+                        {% for error in errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     <div class="d-flex gap-2">
-
                         <!-- 댓글 입력창 -->
-                        <input type="text" class="form-control rounded-pill px-3 border-dark" id="commentInput"
-                            placeholder="댓글을 입력해주세요." autocomplete="off">
-
+                        <textarea class="form-control" name="content" id="content" rows="1"
+                            placeholder="댓글을 입력해주세요"></textarea>
+                        <!-- <input type="text" class="form-control rounded-pill px-3 border-dark" id="commentInput"
+                            placeholder="댓글을 입력해주세요." autocomplete="off"> -->
                         <!-- 등록 -->
                         <button type="submit" class="btn btn-outline-dark
                                        rounded-3
                                        px-3
                                        flex-shrink-0
                                        fw-semibold">
-
                             등록하기
-
                         </button>
 
                     </div>
@@ -527,5 +531,19 @@
 
     }
 </style>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    const delete_elements = document.getElementsByClassName('delete');
+    Array.from(delete_elements).forEach(function (element) {
+        element.addEventListener('click', function () {
+            if (confirm('정말로 삭제하시겠습니까?')) {
+                location.href = this.dataset.uri;
+            };
+        });
+    });
+</script>
 
 {% endblock %}

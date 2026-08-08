@@ -13,7 +13,7 @@ def create(post_id):
     form = CommentForm()
     if form.validate_on_submit():
         content = request.form['content']
-        comment = Comment(content=content, create_date=datetime.now(), user=g.user)
+        comment = Comment(content=form.content.data, create_date=datetime.now(), user=g.user)   # sinae : 808 content=content에서 변경
         post.comment_set.append(comment)
         db.session.commit()
 
@@ -44,7 +44,7 @@ def modify(comment_id):
     else:
         form = CommentForm(obj=comment)
     #comment.edit
-    return render_template('', comment=comment, form=form)
+    return render_template('comment_modify.html', comment=comment, form=form)      # sinae : ''에서 -> comment_modify.html 로 변경
 
 @bp.route('/delete/<int:comment_id>/')
 @login_required

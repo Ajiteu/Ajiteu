@@ -1,7 +1,7 @@
 from ajiteu import db
 from ajiteu.models import Post, Comment,Reply, User, post_liker
 from ajiteu.views.auth_views import login_required
-from ajiteu.forms import PostForm
+from ajiteu.forms import PostForm, CommentForm # sinae : 808 CommentForm 추가
 from flask import Blueprint, render_template, url_for, redirect, request, g, flash, current_app
 from datetime import datetime
 from sqlalchemy import func, distinct
@@ -123,9 +123,12 @@ def create(username_id):
 @bp.route('/detail/<int:post_id>/')
 @login_required
 def detail(post_id):
-    form = PostForm()
+    # sinae : 808 form 수정
+    # form = PostForm()
+    post_form = PostForm()
+    comment_form = CommentForm()
     post = Post.query.get_or_404(post_id)
-    return render_template('post_detail.html', post=post, form=form)
+    return render_template('post_detail.html', post=post, post_form=post_form, comment_form=comment_form)
 
 @bp.route('modify/<int:post_id>/', methods=('GET', 'POST'))
 @login_required
@@ -143,7 +146,7 @@ def modify(post_id):
             return redirect(url_for('post.detail', post_id=post_id))
     else:
         form = PostForm(obj=post)
-    return render_template('edit.html', form=form)
+    return render_template('post_create.html', form=form, post=post, user=post.user)
 
 @bp.route('/delete/<int:post_id>/')
 @login_required
