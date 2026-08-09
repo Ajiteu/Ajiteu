@@ -21,6 +21,7 @@ def create_reply(comment_id):
     return render_template('reply.html', form=form)
 
 #comment의 답변(reply) 수정
+# sinae : 809 수정
 @bp.route('/modify/comment/<int:reply_id>/', methods=('GET', 'POST'))
 @login_required
 def modify_reply(reply_id):
@@ -37,7 +38,8 @@ def modify_reply(reply_id):
             return redirect(url_for('post.detail', post_id=reply.comment.post.id))
     else:
         form = ReplyForm(obj=reply)
-    return render_template('reply_form.html', form=form)
+    return redirect(url_for('post.detail', post_id=reply.comment.post.id))
+    # return render_template('reply_form.html', form=form)
 
 #comment의 답변(reply) 삭제
 @bp.route('/delete/comment/<int:reply_id>/')

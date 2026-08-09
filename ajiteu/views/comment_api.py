@@ -21,7 +21,7 @@ def create(post_id):
         return redirect(url_for('post.detail', post_id=post_id))
         #앵커 있는버전
         #return redirect('{}#comment_{}'.format(url_for('detail', post_id=post_id), comment.id))
-    return render_template('detail.html', post=post, form=form)
+    return render_template('post_detail.html', post=post, form=form)    # sinae : 808 detail.html -> post_detail.html
 
 @bp.route('/modify/<int:comment_id>/', methods=('GET', 'POST'))
 @login_required
@@ -34,8 +34,12 @@ def modify(comment_id):
     if request.method == 'POST':
         form = CommentForm()
         if form.validate_on_submit():
-            form.populate_obj(comment)
+            # sinae : 아래 주석처럼 하면 폼의 모든 필드 객체 복사. post_id 필드가 폼에 없으면 None으로 덮어씌워버린다고한다.
+            # form.populate_obj(comment)
+            comment.content = form.content.data
+            comment.modify_date = datetime.now()        # sinae : 수정날짜 추기
             db.session.commit()
+            flash('댓글이 수정되었습니다')
 
             #앵커 없는버전
             return redirect(url_for('post.detail', post_id=comment.post.id))
