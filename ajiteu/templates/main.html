@@ -161,9 +161,9 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="btnDetailMore">
                                             <a href="javascript:void(0)"
-                                                data-uri="{{ url_for('post.delete', post_id=post.id) }}" ,
+                                                data-uri="{{ url_for('post.delete', post_id=post.id) }}" 
                                                 class="delete small dropdown-item text-danger">삭제</a>
-                                            <a href="{{ url_for('post.modify', post_id=post.id) }}" ,
+                                            <a href="{{ url_for('post.modify', post_id=post.id) }}" 
                                                 class="small dropdown-item">수정</a>
                                     </div>
                                     {% endif %}

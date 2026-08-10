@@ -82,6 +82,7 @@ body {
     gap: 0.75rem;
 }
 
+/* 좌측 버튼 공통 기본 스타일 (글쓰기, 프로필 설정, 내가 쓴 글) */
 .btn-pill {
     display: block;
     width: 100%;
@@ -90,46 +91,40 @@ body {
     border-radius: 9999px;
     text-decoration: none;
     font-weight: 600;
-    transition: background-color 0.2s;
+    background-color: #ffffff; /* 기본 배경 흰색 */    
+    border: 1px solid #cbd5e1;  /* 버튼 윤곽선 */
+    transition: all 0.2s ease;
 }
 
-.btn-write {
-    background-color: #3b82f6;
-    color: #ffffff;
-}
-
-.btn-write:hover {
-    background-color: #2563eb;
-}
-
-.btn-mypost {
-    background-color: #f1f5f9;
-    color: #334155;
-}
-
+/* 📌 hover 시 옅은 자주색 통합 적용 (우선순위를 높여 이전 hover 스타일 삭제) */
+.btn-pill:hover,
+.btn-write:hover,
 .btn-mypost:hover {
-    background-color: #e2e8f0;
-}
-
-.text-link {
-    display: block;
-    text-align: center;
-    color: #64748b;
-    text-decoration: none;
-    font-size: 0.9rem;
-    padding: 0.5rem;
-}
-
-.text-link:hover {
-    color: #0f172a;
+    background-color:#9381D6 !important; /* 마우스 올렸을 때 자주색 배경 */
+    border-color:#9381D6 !important;     /* 마우스 올렸을 때 테두리 색상 */
+    color: #ffffff !important;           /* 글자색을 흰색으로 변경 (선택사항) */
 }
 
 .logout-section {
     margin-top: auto;
 }
 
+/* 📌 로그아웃 전용 스타일 (테두리/배경 X, hover시 글자 그림자만 생성) */
 .logout-section .logout {
-    color: #ef4444;
+    display: inline-block;
+    color: #ef4444;                  /* 기본 붉은색 글자 */
+    background: transparent;          /* 배경 없음 */
+    border: none;                     /* 테두리 없음 */
+    text-decoration: none;
+    text-shadow: none;                /* 기본 상태 그림자 없음 */
+    transition: text-shadow 0.2s ease;
+}
+
+.logout-section .logout:hover {
+    color: #ef4444;                   /* hover시에도 붉은 글자 유지 */
+    background: transparent;           /* hover시에도 배경 없음 */
+    border: none;                      /* hover시에도 테두리 없음 */
+    /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5); 45도 우하향(x:2px, y:2px), 흐림0, 진한 그림자 */
 }
 
 /* ========================================================
@@ -229,6 +224,22 @@ body {
     align-items: start;
 }
 
+/* 1. 평소 상태: 연한 회색 테두리 + 기본적인 연한 그림자 */
+.card-item {
+    border: 1px solid #e2e8f0 !important;       /* 연한 회색 테두리 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.04) !important; /* 평소 연한 그림자 */
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+/* 2. Hover 상태: 평소보다 훨씬 더 진하고 입체적인 그림자 */
+.card-item:hover {
+    border-color: #cbd5e1 !important;           /* hover 시 테두리도 선명하게 */
+    box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.22), 
+                0 6px 8px -2px rgba(0, 0, 0, 0.15) !important; /* hover 시 진하고 커지는 그림자 */
+    /* transform: translateY(-3px); */          /* (선택) 마우스 올렸을 때 카드가 살짝 떠오르는 느낌을 원하시면 주석 해제 */
+}
+
 .pagination-bar {
     display: flex;
     justify-content: center;
@@ -276,6 +287,34 @@ body {
     list-style: none;
 }
 
+/* 1. 기본 상태: 글자색을 검은색으로 설정 */
+.widget-list.trend .list-item {
+    color: #000000; /* 기본 글자색: 검은색 */
+    transition: background-color 0.2s, color 0.2s; /* 색상 변화 부드럽게 */
+}
+
+/* 2. hover 상태: 글자색은 공통으로 흰색, 배경색만 각각 다르게 변경 */
+.widget-list.trend .list-item:nth-child(1):hover {
+    background-color: #9381D6 ; /* 1번째 버튼 hover 배경색 */
+    color: #ffffff;                 /* hover시 글자색: 흰색 */
+}
+
+.widget-list.trend .list-item:nth-child(2):hover {
+    background-color:#9381D6 ; /* 2번째 버튼 hover 배경색 */
+    color: #ffffff;                 /* hover시 글자색: 흰색 */
+}
+
+.widget-list.trend .list-item:nth-child(3):hover {
+    background-color:#9381D6 ; /* 3번째 버튼 hover 배경색 */
+    color: #ffffff;                 /* hover시 글자색: 흰색 */
+}
+
+.widget-list.trend .list-item:nth-child(4):hover {
+    background-color:#9381D6 ; /* 4번째 버튼 hover 배경색 */
+    color: #ffffff;                 /* hover시 글자색: 흰색 */
+}
+
+/* 기존 .list-item:hover 영역 찾기 */
 .list-item {
     padding: 0.5rem 0.75rem;
     border-radius: 6px;
@@ -285,14 +324,22 @@ body {
     transition: background-color 0.2s;
 }
 
+/* [수정] hover 시 옅은 자주색 적용 */
 .list-item:hover {
-    background-color: #f8fafc;
+    background-color:#9381D6; 
+    color: #ffffff;
 }
 
 .list-item.active {
     background-color: #eff6ff;
     color: #2563eb;
     font-weight: 600;
+}
+
+/* 📌 [추가] 선택된(active) 항목에 마우스를 올렸을 때도 옅은 자주색으로 변경 */
+.list-item.active:hover {
+    background-color:#9381D6 !important;
+    color: #ffffff !important;
 }
 
 .divider-short {
