@@ -164,6 +164,19 @@ body {
     width: calc(100% - 240px);
 }
 
+.community-title .title-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    color: #0f172a;
+    text-decoration: none;
+}
+
+.community-title .title-logo {
+    height: 1.5em;
+    width: auto;
+}
+
 .search-box-wrap {
     display: flex;
     gap: 0.5rem;

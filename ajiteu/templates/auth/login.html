@@ -2,10 +2,10 @@
 {% block content %}
 <div class="row min-vh-100 g-0">
     <!-- 왼쪽 브랜딩 영역 -->
-    <div class="col-md-6 d-none d-md-flex flex-column bg-light p-5 position-relative">
-        <div class="position-absolute top-0 start-0 p-5">
+    <div class="col-md-6 d-none d-md-flex flex-column p-5 position-relative login-left">
+        <!-- <div class="position-absolute top-0 start-0 p-5">
             <span class="fw-bold">로고</span>
-        </div>
+        </div> -->
         <div class="flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center">
             <h2 class="fw-bold mb-3">함께 나누는 이야기,<br>더 가까워지는 우리</h2>
             <p class="text-muted">
@@ -16,8 +16,7 @@
     </div>
 
     <!-- 오른쪽 로그인 폼 (약간 어두운 회색 배경) -->
-    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center p-5"
-        style="background-color:#e9e9e9;">
+    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center p-5">
         <div class="w-100" style="max-width: 360px;">
             <h1 class="h3 mb-1">로그인</h1>
             <p class="text-muted small mb-4">환영합니다! 계정에 로그인해주세요.</p>
@@ -33,7 +32,7 @@
                     {{ form.password(class="form-control", placeholder="비밀번호") }}
                 </div>
 
-                <button type="submit" class="btn btn-dark w-100 mb-3">로그인</button>
+                <button type="submit" class="btn btn-login w-100 mb-3">로그인</button>
 
                 <div class="d-flex align-items-center mb-3">
                     <hr class="flex-grow-1">
@@ -41,9 +40,14 @@
                     <hr class="flex-grow-1">
                 </div>
 
-                <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-dark w-100 mb-3">회원가입</a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-signup w-100 mb-3">회원가입</a>
 
-                <p class="text-center text-muted small mb-0">로고 아지트</p>
+                <!-- <p class="text-center text-muted small mb-0">로고 아지트</p> -->
+                <p class="text-center text-muted small mb-0 d-flex align-items-center justify-content-center gap-1">
+                    <img src="{{ url_for('static', filename='images/logo/ajiteu_logo.png') }}" alt="로고"
+                        class="footer-logo">
+                    <strong>아지트</strong>
+                </p>
             </form>
         </div>
     </div>

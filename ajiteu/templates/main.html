@@ -12,6 +12,7 @@
     <!-- 커스텀 메인 레이아웃 및 컴포넌트 CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pagination.css') }}">
 </head>
 
 <body class="bg-light text-dark">
@@ -107,8 +108,14 @@
             <!-- 2. 상단 헤더 -->
             <header class="search-header">
                 <!-- sinae : 808 '아지트' 눌렀을때 메인리스트 보여주기 -->
-                <h1 class="community-title"><a href="{{ url_for('post._list', username_id=g.user.id) }}"
-                        style="text-decoration: none;">아지트</a></h1>
+                <h1 class="community-title">
+                    <a href="{{ url_for('post._list', username_id=g.user.id) }}" class="title-link">
+                        <img src="{{ url_for('static', filename='images/logo/ajiteu_logo.png') }}" alt="로고"
+                            class="title-logo">
+                        아지트
+                    </a>
+                </h1>
+
                 <div class="search-box-wrap">
                     <input type="text" id="searchInput" class="search-input" placeholder="검색어를 입력하세요...">
                     <button id="searchBtn" class="search-btn">검색</button>
@@ -237,39 +244,27 @@
                     <ul
                         class="pagination-bar d-flex justify-content-center align-items-center gap-2 mt-4 list-unstyled">
                         {% if post_list.has_prev %}
-                        <li>
-                            <a href="?page={{ post_list.prev_num }}">◁</a>
-                        </li>
+                        <li><a href="?page={{ post_list.prev_num }}" class="page-link">&lt;&lt;</a></li>
                         {% else %}
-                        <li>
-                            <a href="#">◁</a>
-                        </li>
+                        <li><a href="#" class="page-link disabled">&lt;&lt;</a></li>
                         {% endif %}
 
                         {% for page_num in post_list.iter_pages() %}
                         {% if page_num %}
                         {% if page_num != post_list.page %}
-                        <li><a href="?page={{ page_num }}">{{ page_num }}</a></li>
+                        <li><a href="?page={{ page_num }}" class="page-link">{{ page_num }}</a></li>
                         {% else %}
-                        <li>
-                            <a href="#">{{ page_num }}</a>
-                        </li>
+                        <li><a href="#" class="page-link active">{{ page_num }}</a></li>
                         {% endif %}
                         {% else %}
-                        <li>
-                            <a href="#" aria-disabled="true">...</a>
-                        </li>
+                        <li><a href="#" class="page-link ellipsis" aria-disabled="true">...</a></li>
                         {% endif %}
                         {% endfor %}
 
                         {% if post_list.has_next %}
-                        <li>
-                            <a href="?page={{ post_list.next_num }}">▻</a>
-                        </li>
+                        <li><a href="?page={{ post_list.next_num }}" class="page-link">&gt;&gt;</a></li>
                         {% else %}
-                        <li>
-                            <a href="#" tabindex="-1" aria-disabled="true">▻</a>
-                        </li>
+                        <li><a href="#" class="page-link disabled" tabindex="-1" aria-disabled="true">&gt;&gt;</a></li>
                         {% endif %}
                     </ul>
                     {% endif %}

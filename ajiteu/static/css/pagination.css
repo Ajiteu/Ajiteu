@@ -1,0 +1,34 @@
+.pagination-bar {
+    background-color: #f8f9fa;  /* 이미지처럼 회색 바탕 */
+    padding: 10px 0;
+    /* border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb; */
+}
+
+.pagination-bar .page-link {
+    color: #333;
+    text-decoration: none;      /* 밑줄 제거 */
+    font-size: 14px;
+    padding: 4px 8px;
+}
+
+.pagination-bar .page-link:hover {
+    text-decoration: none;
+    color: #000;
+}
+
+.pagination-bar .page-link.active {
+    font-weight: bold;
+    color: #000;
+}
+
+.pagination-bar .page-link.disabled {
+    color: #999;
+    pointer-events: none;
+    cursor: default;
+}
+
+.pagination-bar .page-link.ellipsis {
+    color: #666;
+    pointer-events: none;
+}
