@@ -1,13 +1,44 @@
 from ajiteu import db
-from ajiteu.models import Post, Comment,Reply, User, post_liker
+from ajiteu.models import Post, Comment, Reply, User, post_liker
 from ajiteu.views.auth_views import login_required
 from ajiteu.forms import PostForm, CommentForm # sinae : 808 CommentForm 추가
 from flask import Blueprint, render_template, url_for, redirect, request, g, flash, current_app, jsonify
-from datetime import datetime
-from sqlalchemy import func, distinct
+from datetime import datetime, timedelta
+from sqlalchemy import func, distinct, or_
 import os
 import uuid
 from werkzeug.utils import secure_filename
+
+
+CATEGORY_KEYWORDS = {
+    'travel': ['여행', 'trip', 'travel', '관광', '휴가', '해외', '국내여행'],
+    'exercise': ['운동', 'exercise', '헬스', '러닝', '런닝', '요가', '필라테스', '근력'],
+    'food': ['음식', 'food', '맛집', '요리', '먹방', '카페', '식당', '맛있'],
+}
+
+
+def build_category_filter(category: str):
+    """본문 키워드로 카테고리 필터."""
+    if not category or category == 'all':
+        return None
+    keywords = CATEGORY_KEYWORDS.get(category, [])
+    if not keywords:
+        return None
+    return or_(*[Post.content.ilike(f'%{keyword}%') for keyword in keywords])
+
+
+def get_weekly_trends(limit: int = 4):
+    """최근 7일 게시글 중 좋아요 수 상위 글."""
+    week_ago = datetime.now() - timedelta(days=7)
+    return (
+        db.session.query(Post)
+        .filter(Post.create_date >= week_ago)
+        .outerjoin(post_liker, Post.id == post_liker.c.post_id)
+        .group_by(Post.id)
+        .order_by(func.count(post_liker.c.user_id).desc(), Post.create_date.desc())
+        .limit(limit)
+        .all()
+    )
 # from flask_login import current_user
 
 
@@ -25,8 +56,13 @@ def _list(username_id):
     kw = request.args.get('kw', type=str, default='')
     #정렬기준
     so = request.args.get('so', type=str, default='recent')
+    category = request.args.get('category', type=str, default='all')
 
     post_list = Post.query
+
+    category_filter = build_category_filter(category)
+    if category_filter is not None:
+        post_list = post_list.filter(category_filter)
 
     #검색조건 1. (kw)
     if kw:
@@ -39,6 +75,7 @@ def _list(username_id):
                      .filter(Post.content.ilike(search) |
                              sub_query.c.content.ilike(search) |
                              Post.user.has(User.username.ilike(search)) |
+                             Post.user.has(User.nickname.ilike(search)) |
                              sub_query.c.username.ilike(search)))
     #검색조건 2. (so) - 임시
     if so == 'recommend':
@@ -62,8 +99,18 @@ def _list(username_id):
 
     post_list = post_list.paginate(page=page, per_page=10)
 
-    # return render_template('main.html', post_list=post_list, page=page, kw=kw, so=so)       # by breeze - 2026.08.06
-    return render_template('main.html', post_list=post_list, page=page, kw=kw, so=so, user=user)
+    weekly_trends = get_weekly_trends(limit=4)
+
+    return render_template(
+        'main.html',
+        post_list=post_list,
+        page=page,
+        kw=kw,
+        so=so,
+        user=user,
+        current_category=category,
+        weekly_trends=weekly_trends,
+    )
 
 
 
@@ -128,6 +175,8 @@ def detail(post_id):
     post_form = PostForm()
     comment_form = CommentForm()
     post = Post.query.get_or_404(post_id)
+    post.view_count = (post.view_count or 0) + 1
+    db.session.commit()
     return render_template('post_detail.html', post=post, post_form=post_form, comment_form=comment_form)
 
 @bp.route('modify/<int:post_id>/', methods=('GET', 'POST'))

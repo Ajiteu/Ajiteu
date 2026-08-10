@@ -109,10 +109,13 @@
                 <!-- sinae : 808 '아지트' 눌렀을때 메인리스트 보여주기 -->
                 <h1 class="community-title"><a href="{{ url_for('post._list', username_id=g.user.id) }}"
                         style="text-decoration: none;">아지트</a></h1>
-                <div class="search-box-wrap">
-                    <input type="text" id="searchInput" class="search-input" placeholder="검색어를 입력하세요...">
-                    <button id="searchBtn" class="search-btn">검색</button>
-                </div>
+                <form class="search-box-wrap" method="GET"
+                    action="{{ url_for('post._list', username_id=user.id) }}">
+                    <input type="hidden" name="category" value="{{ current_category|default('all') }}">
+                    <input type="text" id="searchInput" name="kw" class="search-input"
+                        placeholder="검색어를 입력하세요..." value="{{ kw|default('') }}">
+                    <button type="submit" id="searchBtn" class="search-btn">검색</button>
+                </form>
             </header>
 
             <!-- 콘텐츠 바디 -->
@@ -216,7 +219,7 @@
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
-                                        <span class="view-count">{{ post.view_count }}</span>
+                                        <span class="view-count">{{ post.view_count or 0 }}</span>
                                     </span>
                                 </div>
                             </div>
@@ -238,7 +241,7 @@
                         class="pagination-bar d-flex justify-content-center align-items-center gap-2 mt-4 list-unstyled">
                         {% if post_list.has_prev %}
                         <li>
-                            <a href="?page={{ post_list.prev_num }}">◁</a>
+                            <a href="{{ url_for('post._list', username_id=user.id, page=post_list.prev_num, category=current_category|default('all'), kw=kw|default('')) }}">◁</a>
                         </li>
                         {% else %}
                         <li>
@@ -249,7 +252,7 @@
                         {% for page_num in post_list.iter_pages() %}
                         {% if page_num %}
                         {% if page_num != post_list.page %}
-                        <li><a href="?page={{ page_num }}">{{ page_num }}</a></li>
+                        <li><a href="{{ url_for('post._list', username_id=user.id, page=page_num, category=current_category|default('all'), kw=kw|default('')) }}">{{ page_num }}</a></li>
                         {% else %}
                         <li>
                             <a href="#">{{ page_num }}</a>
@@ -264,7 +267,7 @@
 
                         {% if post_list.has_next %}
                         <li>
-                            <a href="?page={{ post_list.next_num }}">▻</a>
+                            <a href="{{ url_for('post._list', username_id=user.id, page=post_list.next_num, category=current_category|default('all'), kw=kw|default('')) }}">▻</a>
                         </li>
                         {% else %}
                         <li>
@@ -309,10 +312,13 @@
                     <div class="widget-block mb-4">
                         <div class="widget-title fw-bold mb-3">카테고리</div>
                         <ul class="widget-list list-unstyled d-flex flex-column gap-2 m-0 p-0">
-                            <li class="list-item category-item active" data-category="all">전체</li>
-                            <li class="list-item category-item" data-category="travel">여행</li>
-                            <li class="list-item category-item" data-category="exercise">운동</li>
-                            <li class="list-item category-item" data-category="food">음식</li>
+                            {% set categories = [('all', '전체'), ('travel', '여행'), ('exercise', '운동'), ('food', '음식')] %}
+                            {% for cat_key, cat_label in categories %}
+                            <li class="list-item category-item{% if (current_category|default('all')) == cat_key %} active{% endif %}">
+                                <a href="{{ url_for('post._list', username_id=user.id, category=cat_key, kw=kw|default('')) }}"
+                                    class="text-decoration-none text-reset d-block">{{ cat_label }}</a>
+                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
 
@@ -321,10 +327,18 @@
                     <div class="widget-block">
                         <div class="widget-title fw-bold mb-3">주간 트렌드</div>
                         <ul class="widget-list trend list-unstyled d-flex flex-column gap-2 m-0 p-0">
-                            <li class="list-item text-truncate">제주 바다 사진 모음</li>
-                            <li class="list-item text-truncate">홈트 루틴 추천</li>
-                            <li class="list-item text-truncate">감성 브런치 만들기</li>
-                            <li class="list-item text-truncate">혼자 떠난 부산 여행</li>
+                            {% if weekly_trends|default([]) %}
+                            {% for trend_post in weekly_trends %}
+                            <li class="list-item text-truncate">
+                                <a href="{{ url_for('post.detail', post_id=trend_post.id) }}"
+                                    class="text-decoration-none text-reset">
+                                    {{ trend_post.content[:30] }}{% if trend_post.content|length > 30 %}...{% endif %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-item text-muted">최근 트렌드가 없습니다.</li>
+                            {% endif %}
                         </ul>
                     </div>
                 </aside>

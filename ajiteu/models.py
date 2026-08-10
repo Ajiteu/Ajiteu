@@ -30,6 +30,7 @@ class Post(db.Model):
     modify_date = db.Column(db.DateTime())
     #여러개 이미지
     image_path = db.Column(db.Text(), nullable=True)
+    view_count = db.Column(db.Integer, default=0, nullable=False)
     #User와 연결
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref=db.backref('post_set'))
