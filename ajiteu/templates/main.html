@@ -315,8 +315,13 @@
                             {% set categories = [('all', '전체'), ('travel', '여행'), ('exercise', '운동'), ('food', '음식')] %}
                             {% for cat_key, cat_label in categories %}
                             <li class="list-item category-item{% if (current_category|default('all')) == cat_key %} active{% endif %}">
+                                {% if cat_key == 'all' %}
+                                <a href="{{ url_for('post._list', username_id=user.id) }}"
+                                    class="text-decoration-none text-reset d-block">{{ cat_label }}</a>
+                                {% else %}
                                 <a href="{{ url_for('post._list', username_id=user.id, category=cat_key, kw=kw|default('')) }}"
                                     class="text-decoration-none text-reset d-block">{{ cat_label }}</a>
+                                {% endif %}
                             </li>
                             {% endfor %}
                         </ul>
