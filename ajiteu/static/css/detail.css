@@ -1,0 +1,191 @@
+< !--=========================================게시글 상세 모달 크기=========================================-->
+/* =====================================
+       프로필 사진
+    ====================================== */
+
+.detail-profile-circle {
+    width: 44px;
+    height: 44px;
+}
+
+
+.comment-profile-circle {
+    width: 36px;
+    height: 36px;
+}
+
+/* 추가 */
+/* 상세페이지 - 프로필과 본문 사이 간격 */
+#postDetailModal .author-box {
+    margin-bottom: 1.0rem;
+}
+
+/* 상세페이지의 본문 전체 영역
+   글 + 이미지 */
+#postDetailModal .detail-post-body {
+    min-height: 18rem;
+}
+
+/* 구분선 */
+#postDetailModal .detail-divider {
+    border-top: 1px solid #dee2e6;
+    margin: 1rem 0;
+}
+
+/* =====================================
+       PC
+
+       내용이 많든 적든
+       모달 크기는 동일
+    ====================================== */
+
+.post-detail-dialog {
+    width: 60vw;
+    max-width: none;
+
+    height: 80vh;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.post-detail-content {
+    height: 80vh;
+
+    overflow: hidden;
+}
+
+/* =====================================
+       게시글 이미지
+
+       이미지가 커도 모달 자체가
+       커지지 않도록 제한
+    ====================================== */
+
+.post-image-area {
+    width: 100%;
+}
+
+
+.post-detail-image {
+    width: 100%;
+
+    height: 42vh;
+
+    object-fit: contain;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    filter: brightness(0) opacity(0.8);
+}
+
+/* =====================================
+       태블릿
+       Bootstrap lg 미만
+    ====================================== */
+
+@media (max-width: 991.98px) {
+
+    .post-detail-dialog {
+
+        width: 80vw;
+
+        height: 85vh;
+
+    }
+
+
+    .post-detail-content {
+
+        height: 85vh;
+
+    }
+
+
+    .post-detail-image {
+
+        max-height: 40vh;
+
+    }
+
+}
+
+/* =====================================
+       모바일
+       Bootstrap md 미만
+    ====================================== */
+
+@media (max-width: 767.98px) {
+
+    .post-detail-dialog {
+
+        width: 95vw;
+
+        height: 90vh;
+
+        margin-left: auto;
+        margin-right: auto;
+
+    }
+
+
+    .post-detail-content {
+
+        height: 90vh;
+
+    }
+
+
+    .post-detail-image {
+
+        max-height: 35vh;
+
+    }
+
+
+    .modal-body {
+
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+
+    }
+
+}
+
+/* =====================================
+       아주 작은 모바일
+    ====================================== */
+
+@media (max-width: 575.98px) {
+
+    .post-detail-dialog {
+
+        width: 96vw;
+
+        height: 92vh;
+
+    }
+
+    .post-detail-content {
+
+        height: 92vh;
+
+    }
+
+    .detail-profile-circle {
+
+        width: 40px;
+        height: 40px;
+
+    }
+
+    .comment-profile-circle {
+
+        width: 32px;
+        height: 32px;
+
+    }
+
+}

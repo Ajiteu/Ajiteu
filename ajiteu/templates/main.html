@@ -12,6 +12,8 @@
     <!-- 커스텀 메인 레이아웃 및 컴포넌트 CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
+
 </head>
 
 <body class="bg-light text-dark">
@@ -39,7 +41,7 @@
             <div class="profile-section d-flex flex-column align-items-center text-center">
                 {% if g.user %}
                 <!-- 프로필 이미지 동그라미 링크 -->
-                <a href="/profile" class="text-decoration-none text-reset">
+                <a href="{{url_for('post.user_posts', user_id=g.user.id)}}" class="text-decoration-none text-reset">
                     <div class="avatar-circle overflow-hidden mb-3">
                         <img src="{{ g.user.image_path and url_for('static', filename=g.user.image_path) or url_for('static', filename='images/default.png') }}"
                             alt="프로필" class="w-100 h-100 object-fit-cover"
@@ -48,7 +50,7 @@
                     </div>
                 </a>
                 <!-- 닉네임 링크 -->
-                <a href="/profile" class="text-decoration-none text-reset">
+                <a href="{{url_for('post.user_posts', user_id=g.user.id)}}" class="text-decoration-none text-reset">
                     <!-- <div class="user-name fw-bold" id="userName">닉네임</div> -->
                     <div class="user-name fw-bold" id="userName">{{ g.user.nickname }}</div>
                 </a>
