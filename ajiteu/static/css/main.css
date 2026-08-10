@@ -163,13 +163,14 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
-    color: #0f172a;
+    color: #c56daf;
     text-decoration: none;
 }
 
 .community-title .title-logo {
     height: 1.5em;
     width: auto;
+    display: block;
 }
 
 .search-box-wrap {
@@ -196,7 +197,7 @@ body {
 .search-btn {
     height: 38px;
     padding: 0 1.25rem;
-    background-color: #0f172a;
+    background-color: #9381D6;
     color: #ffffff;
     border: none;
     border-radius: 6px;
