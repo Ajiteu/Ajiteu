@@ -30,15 +30,9 @@ def build_category_filter(category: str):
 def get_weekly_trends(limit: int = 4):
     """최근 7일 게시글 중 좋아요 수 상위 글."""
     week_ago = datetime.now() - timedelta(days=7)
-    return (
-        db.session.query(Post)
-        .filter(Post.create_date >= week_ago)
-        .outerjoin(post_liker, Post.id == post_liker.c.post_id)
-        .group_by(Post.id)
-        .order_by(func.count(post_liker.c.user_id).desc(), Post.create_date.desc())
-        .limit(limit)
-        .all()
-    )
+    posts = Post.query.filter(Post.create_date >= week_ago).all()
+    posts.sort(key=lambda post: len(post.liker), reverse=True)
+    return posts[:limit]
 # from flask_login import current_user
 
 
