@@ -1,31 +1,49 @@
 {% extends 'main.html' %}
 {% block content %}
 <!-- 새글 작성 팝업 모달 -->
+<!-- sinae : 808 새글쓰기와 게시글 수정 나누기 -->
 <div id="postModal" class="modal-overlay-write" style="display: flex;">
 
     <div class="modal-write-card">
         <div class="border-bottom pb-2 mb-3">
+            {% if post %}
+            <h5 class="fw-bold m-0">게시글 수정</h5>
+            {% else %}
             <h5 class="fw-bold m-0">새글 작성</h5>
+            {% endif %}
         </div>
-        <form id="postForm" method="POST" action="{{ url_for('post.create', username_id=user.id) }}"
+        {% if post %}
+        <form id="postForm" method="POST" action="{{ url_for('post.modify', post_id=post.id) }}"
             enctype="multipart/form-data">
-            {{ form.csrf_token }}
-            <div class="fw-bold mb-2 text-dark" id="modalUserNickname">{{ user.nickname }}</div>
-            <div class="mb-3">
-                <textarea class="form-control" id="postContent" rows="8" name="content" placeholder="어떤 순간을 공유하고 싶으신가요?"
-                    style="resize: none;" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="imageUploadInput" class="btn btn-sm btn-outline-secondary">📷 사진 추가</label>
-                <input type="file" class="d-none" accept="image/*" multiple id="imageUploadInput" name="image">
-                <div id="imagePreview" class="image-preview-box mt-2"></div>
-            </div>
-            <div class="d-flex justify-content-end gap-2 pt-2">
-                <a href="{{ url_for('post._list', username_id=user.id) }}" class="btn btn-secondary btn-sm px-3"
-                    id="btnCancelWrite">취소</a>
-                <button type="submit" class="btn btn-primary btn-sm px-3">등록하기</button>
-            </div>
-        </form>
+            {% else %}
+            <form id="postForm" method="POST" action="{{ url_for('post.create', username_id=user.id) }}"
+                enctype="multipart/form-data">
+                {% endif %}
+                {{ form.csrf_token }}
+                <div class="fw-bold mb-2 text-dark" id="modalUserNickname">{{ user.nickname }}</div>
+                <div class="mb-3">
+                    <textarea class="form-control" id="postContent" rows="8" name="content"
+                        placeholder="어떤 순간을 공유하고 싶으신가요?" style="resize: none;" required>{{ form.content.data or '' }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="imageUploadInput" class="btn btn-sm btn-outline-secondary">📷 사진 추가</label>
+                    <input type="file" class="d-none" accept="image/*" multiple id="imageUploadInput" name="image">
+                    <div id="imagePreview" class="image-preview-box mt-2"></div>
+                </div>
+                {% if post %}
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <a href="{{ url_for('post._list', username_id=user.id) }}" class="btn btn-secondary btn-sm px-3"
+                            id="btnCancelWrite">취소</a>
+                        <button type="submit" class="btn btn-primary btn-sm px-3">수정하기</button>
+                    </div>
+                {% else %}
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <a href="{{ url_for('post._list', username_id=user.id) }}" class="btn btn-secondary btn-sm px-3"
+                            id="btnCancelWrite">취소</a>
+                        <button type="submit" class="btn btn-primary btn-sm px-3">등록하기</button>
+                    </div>
+                {% endif %}
+            </form>
     </div>
 </div>
 {% endblock %}

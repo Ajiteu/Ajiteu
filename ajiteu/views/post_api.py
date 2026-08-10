@@ -1,8 +1,8 @@
 from ajiteu import db
 from ajiteu.models import Post, Comment,Reply, User, post_liker
 from ajiteu.views.auth_views import login_required
-from ajiteu.forms import PostForm
-from flask import Blueprint, render_template, url_for, redirect, request, g, flash, current_app
+from ajiteu.forms import PostForm, CommentForm # sinae : 808 CommentForm 추가
+from flask import Blueprint, render_template, url_for, redirect, request, g, flash, current_app, jsonify
 from datetime import datetime
 from sqlalchemy import func, distinct
 import os
@@ -123,9 +123,12 @@ def create(username_id):
 @bp.route('/detail/<int:post_id>/')
 @login_required
 def detail(post_id):
-    form = PostForm()
+    # sinae : 808 form 수정
+    # form = PostForm()
+    post_form = PostForm()
+    comment_form = CommentForm()
     post = Post.query.get_or_404(post_id)
-    return render_template('post_detail.html', post=post, form=form)
+    return render_template('post_detail.html', post=post, post_form=post_form, comment_form=comment_form)
 
 @bp.route('modify/<int:post_id>/', methods=('GET', 'POST'))
 @login_required
@@ -143,7 +146,7 @@ def modify(post_id):
             return redirect(url_for('post.detail', post_id=post_id))
     else:
         form = PostForm(obj=post)
-    return render_template('edit.html', form=form)
+    return render_template('post_create.html', form=form, post=post, user=post.user)
 
 @bp.route('/delete/<int:post_id>/')
 @login_required
@@ -152,30 +155,31 @@ def delete(post_id):
     if g.user != post.user:
         flash('삭제 권한이 없습니다')
         return redirect(url_for('post.detail', post_id=post_id))
+
     db.session.delete(post)
     db.session.commit()
-    return redirect(url_for('post._list'))
+    return redirect(url_for('post._list', username_id=g.user.id))       #sinae : 808 username_id=g.user.id 추가
 
 
-#추후 수정-------------------------------
 
-@bp.route('/like/<int:post_id>/')
+# sinae 809 추천수정
+@bp.route('/like/<int:post_id>/', methods=['POST'])
 @login_required
 def like(post_id):
     post = Post.query.get_or_404(post_id)
 
     if g.user == post.user:
         flash('본인이 작성한 글은 추천할 수 없습니다')
-        return redirect(url_for('post.detail', post_id=post_id))
+        return jsonify({'success': False, 'message': '본인이 작성한 글은 추천할 수 없습니다'})
 
     if g.user in post.liker:
         flash('이미 추천한 질문입니다')
-        return redirect(url_for('post.detail', post_id=post_id))
+        return jsonify({'success': False, 'message': '이미 추천한 질문입니다'})
 
     post.liker.append(g.user)
     db.session.commit()
 
-    return redirect(url_for('post.detail', post_id=post_id))
+    return jsonify({'success': True, 'message': '추천되었습니다', 'like_count': len(post.liker)})
 
 # sinae 808 홈화면 모든글 보여주기
 

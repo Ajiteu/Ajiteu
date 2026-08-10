@@ -33,6 +33,10 @@ class Post(db.Model):
     #User와 연결
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref=db.backref('post_set'))
+
+    #sinae : 808 post가 지워지면 아래 comment들도 지워지게 설정
+    comment_set = db.relationship('Comment', cascade='all, delete-orphan')
+
     #추천인(like)
     liker = db.relationship(
         'User',
@@ -44,7 +48,11 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id', ondelete='CASCADE'), nullable=False)
     #수정(처음 -  cascade='all, delete-orphan' 지우고 > ondelete='CASCADE' 넣었는데 오류나서 > 지움)
-    post = db.relationship('Post', backref=db.backref('comment_set'))
+    
+    # sinae : 808 Post(db.Model)에서 comment_set으로 post가 지워지면 comment도 지워지게.(위에서 relationship하면 여기서 backref 지워줘야한다고 함)
+    # post = db.relationship('Post', backref=db.backref('comment_set'))
+    post = db.relationship('Post')
+
     content = db.Column(db.Text(), nullable=False)
     create_date = db.Column(db.DateTime(), nullable=False)
     modify_date = db.Column(db.DateTime())
