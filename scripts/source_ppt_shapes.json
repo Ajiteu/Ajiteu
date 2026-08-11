@@ -1,0 +1,978 @@
+[
+  {
+    "slide": 1,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "팀 프로젝트 '아지트(AJITEU)'\n 포트폴리오"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Flask & Python 기반의 사용자 중심 커뮤니티 및 SNS 웹 애플리케이션 개발 프로젝트"
+      },
+      {
+        "idx": 4,
+        "name": "Picture 5",
+        "type": "PICTURE (13)",
+        "has_text": false
+      }
+    ]
+  },
+  {
+    "slide": 2,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "TextBox 2",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "SECTION 01"
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "프로젝트 개요"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "나만의 공간이자 소통의 장, 커뮤니티 플랫폼 '아지트'의 기획 목적 및 핵심 컨셉"
+      }
+    ]
+  },
+  {
+    "slide": 3,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "직관적인 3단 소셜 레이아웃"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "사용자 편의성을 최우선으로 고려한 모던 인터페이스를 제공합니다."
+      },
+      {
+        "idx": 4,
+        "name": "TextBox 5",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "좌측 사이드바: 로그인 정보, 프로필 설정, 내 글 모아보기 등 개인화 메뉴 배치"
+      },
+      {
+        "idx": 5,
+        "name": "TextBox 6",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "중앙 메인 피드: 글 작성/수정, 이미지 피드, 좋아요/댓글/조회수 실시간 카드 표시"
+      },
+      {
+        "idx": 6,
+        "name": "TextBox 7",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "우측 카테고리: 전체, 여행, 운동, 음식 등 관심사별 필터링 및 주간 트렌드 탐색"
+      },
+      {
+        "idx": 7,
+        "name": "Picture 8",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 8,
+        "name": "TextBox 9",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 9,
+        "name": "TextBox 10",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 10,
+        "name": "TextBox 11",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 11,
+        "name": "TextBox 12",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "프로젝트 소개 & 핵심 컨셉"
+      },
+      {
+        "idx": 12,
+        "name": "Rounded Rectangle 13",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "slide": 4,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "Picture 3",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 3,
+        "name": "Picture 4",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 4,
+        "name": "Picture 5",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 5,
+        "name": "TextBox 6",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "사용자 및 프로필 관리"
+      },
+      {
+        "idx": 6,
+        "name": "TextBox 7",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "회원가입, 로그인 세션 처리와 함께 사용자 프로필 이미지 및 상태 메시지 설정, 내가 작성한 글 모아보기 기능을 제공합니다."
+      },
+      {
+        "idx": 7,
+        "name": "Picture 8",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 8,
+        "name": "TextBox 9",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "게시글 & 미디어 피드"
+      },
+      {
+        "idx": 9,
+        "name": "TextBox 10",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "이미지 첨부 피드 작성, 상세 보기, 좋아요 기능, 비동기 댓글/대댓글 작성 및 실시간 조회수 카운팅을 지원합니다."
+      },
+      {
+        "idx": 10,
+        "name": "Picture 11",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 11,
+        "name": "TextBox 12",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "카테고리 & 트렌드 분석"
+      },
+      {
+        "idx": 12,
+        "name": "TextBox 13",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "여행, 운동, 음식 등 카테고리별 글 필터링과 주간 인기 키워드/게시글을 한눈에 확인할 수 있는 트렌드 섹션을 제공합니다."
+      },
+      {
+        "idx": 13,
+        "name": "Picture 14",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 14,
+        "name": "Picture 15",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 15,
+        "name": "Picture 16",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 16,
+        "name": "TextBox 17",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "핵심 기능 모듈"
+      },
+      {
+        "idx": 17,
+        "name": "Rounded Rectangle 18",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "slide": 5,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "TextBox 2",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "SECTION 02"
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "기술 아키텍처"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "확장성과 유지보수성을 극대화한 백엔드 모듈 구조 및 디렉토리 설계를 소개합니다."
+      }
+    ]
+  },
+  {
+    "slide": 6,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "체계적인 3-Tier 모듈화 설계"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Flask 프레임워크의 Application Factory 패턴과 Blueprint 구조를 적용하였습니다."
+      },
+      {
+        "idx": 4,
+        "name": "Picture 5",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 5,
+        "name": "Picture 6",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 6,
+        "name": "Picture 7",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 7,
+        "name": "Picture 8",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 8,
+        "name": "TextBox 9",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "views/ : 기능별 라우팅 및 RESTful API 엔드포인트 분리"
+      },
+      {
+        "idx": 9,
+        "name": "TextBox 10",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "templates/ : Jinja2 기반의 HTML 템플릿 상속 및 재사용"
+      },
+      {
+        "idx": 10,
+        "name": "TextBox 11",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "static/ : CSS 컴포넌트, JS 모듈, 업로드 이미지 자원 관리"
+      },
+      {
+        "idx": 11,
+        "name": "TextBox 12",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "migrations/ : Flask-Migrate 기반 DB 버전 이력 안전 관리"
+      },
+      {
+        "idx": 12,
+        "name": "Picture 13",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 13,
+        "name": "TextBox 14",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 14,
+        "name": "TextBox 15",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 15,
+        "name": "TextBox 16",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 16,
+        "name": "TextBox 17",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 17,
+        "name": "TextBox 18",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "프로젝트 디렉토리 구조"
+      },
+      {
+        "idx": 18,
+        "name": "Rounded Rectangle 19",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "slide": 7,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "Picture 3",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "View & Controller 모듈"
+      },
+      {
+        "idx": 4,
+        "name": "TextBox 5",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "역할에 맞춰 백엔드 파이썬 로직을 세분화하여 코드 독립성을 확보하였습니다."
+      },
+      {
+        "idx": 5,
+        "name": "TextBox 6",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "RESTful API 모듈"
+      },
+      {
+        "idx": 6,
+        "name": "TextBox 7",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "페이지 전체 리로드 없이 빠른 인터랙션을 지원하는 API 서버 구축"
+      },
+      {
+        "idx": 7,
+        "name": "Picture 8",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 8,
+        "name": "TextBox 9",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "auth_views.py : 회원가입, 로그인/로그아웃, 인증 상태 관리"
+      },
+      {
+        "idx": 9,
+        "name": "TextBox 10",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "main_views.py : 메인 피드 렌더링, 검색 및 카테고리 필터링"
+      },
+      {
+        "idx": 10,
+        "name": "TextBox 11",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "profile.py : 회원 프로필 변경 및 내가 작성한 글 조회"
+      },
+      {
+        "idx": 11,
+        "name": "Picture 12",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 12,
+        "name": "TextBox 13",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "post_api.py : 게시글 생성, 수정, 삭제 비동기 처리"
+      },
+      {
+        "idx": 13,
+        "name": "TextBox 14",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "comment_api.py / reply_api.py : 댓글 및 대댓글 AJAX API"
+      },
+      {
+        "idx": 14,
+        "name": "TextBox 15",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "filter.py : 조건별 필터링 검색 로직 캡슐화"
+      },
+      {
+        "idx": 15,
+        "name": "TextBox 16",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 16,
+        "name": "TextBox 17",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 17,
+        "name": "TextBox 18",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 18,
+        "name": "TextBox 19",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 19,
+        "name": "TextBox 20",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 20,
+        "name": "TextBox 21",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 21,
+        "name": "TextBox 22",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "백엔드 모듈 및 API 설계"
+      },
+      {
+        "idx": 22,
+        "name": "Rounded Rectangle 23",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "slide": 8,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "TextBox 2",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "SECTION 03"
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "데이터베이스 & UX 설계"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "SQLAlchemy ORM을 활용한 데이터 모델링 및 사용자 중심 인터페이스 구현"
+      }
+    ]
+  },
+  {
+    "slide": 9,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "TextBox 2",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "데이터 모델링 & 프론트엔드"
+      },
+      {
+        "idx": 2,
+        "name": "Picture 3",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 3,
+        "name": "Rounded Rectangle 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      },
+      {
+        "idx": 4,
+        "name": "TextBox 5",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "ORM 기반 관계형 DB 설계"
+      },
+      {
+        "idx": 5,
+        "name": "TextBox 6",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "SQLAlchemy ORM을 도입하여 객체지향적인 데이터 모델링을 수행했습니다. User, Post, Comment, Reply, Like 엔티티 간의 1:N 및 N:M 관계를 정의하였습니다."
+      },
+      {
+        "idx": 6,
+        "name": "TextBox 7",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "컴포넌트화된 CSS와 모듈화된 JS를 적용하여 메인 피드와 프로필 관리의 UI/UX 반응성을 대폭 향상시켰습니다."
+      }
+    ]
+  },
+  {
+    "slide": 10,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "100%"
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "모듈화 및 아키텍처 완성도"
+      },
+      {
+        "idx": 4,
+        "name": "TextBox 5",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "클린 코드와 높은 유지보수성 확보"
+      },
+      {
+        "idx": 5,
+        "name": "TextBox 6",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "기능 단위 Blueprint 분리와 RESTful API 도입을 통해 코드의 재사용성을 높이고 유지보수 비용을 크게 절감했습니다."
+      },
+      {
+        "idx": 6,
+        "name": "TextBox 7",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 7,
+        "name": "TextBox 8",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Flask-Migrate 적용: 데이터베이스 스키마 변경 이력을 안전하게 형상 관리"
+      },
+      {
+        "idx": 8,
+        "name": "TextBox 9",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 9,
+        "name": "TextBox 10",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Jinja2 템플릿 계층화: base.html 공통 레이아웃 구성으로 중복 코드 배제"
+      },
+      {
+        "idx": 10,
+        "name": "TextBox 11",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "•"
+      },
+      {
+        "idx": 11,
+        "name": "TextBox 12",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "비동기 API 처리: 댓글 작성 및 좋아요 클릭 시 불필요한 전체 페이지 새로고침 방지"
+      },
+      {
+        "idx": 12,
+        "name": "TextBox 13",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "개발 성과 & 핵심 성과 지표"
+      },
+      {
+        "idx": 13,
+        "name": "Rounded Rectangle 14",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "slide": 11,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "Picture 2",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 2,
+        "name": "Picture 3",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 3,
+        "name": "Picture 4",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 4,
+        "name": "Picture 5",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 5,
+        "name": "Rectangle 6",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      },
+      {
+        "idx": 6,
+        "name": "TextBox 7",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "1. 기획 & DB 설계"
+      },
+      {
+        "idx": 7,
+        "name": "TextBox 8",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "요구사항 분석, 화면 와이어프레임 설계, SQLAlchemy ORM 모델링 (`models.py`)"
+      },
+      {
+        "idx": 8,
+        "name": "TextBox 9",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "2. 백엔드 API 구현"
+      },
+      {
+        "idx": 9,
+        "name": "TextBox 10",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Blueprint 기반 Views 구축, Auth 인증 및 RESTful API 서버 로직 구현"
+      },
+      {
+        "idx": 10,
+        "name": "TextBox 11",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "3. 프론트 연동 & UI"
+      },
+      {
+        "idx": 11,
+        "name": "TextBox 12",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Jinja2 템플릿 완성, 모듈별 CSS 스타일링 및 JS 비동기 통신 구현"
+      },
+      {
+        "idx": 12,
+        "name": "TextBox 13",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "4. 테스트 & 디버깅"
+      },
+      {
+        "idx": 13,
+        "name": "TextBox 14",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "SQLite DB 통합 테스트, 예외 처리 강화 및 최종 배포 환경 설정"
+      },
+      {
+        "idx": 14,
+        "name": "TextBox 15",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "프로젝트 진행 절차"
+      },
+      {
+        "idx": 15,
+        "name": "Rounded Rectangle 16",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      },
+      {
+        "idx": 16,
+        "name": "Rounded Rectangle 17",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      },
+      {
+        "idx": 17,
+        "name": "Rounded Rectangle 18",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      },
+      {
+        "idx": 18,
+        "name": "Rounded Rectangle 19",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      },
+      {
+        "idx": 19,
+        "name": "Rounded Rectangle 20",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "slide": 12,
+    "shapes": [
+      {
+        "idx": 0,
+        "name": "Picture 1",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 1,
+        "name": "TextBox 2",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "Questions & Answers"
+      },
+      {
+        "idx": 2,
+        "name": "TextBox 3",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": "경청해주셔서 감사합니다."
+      },
+      {
+        "idx": 3,
+        "name": "TextBox 4",
+        "type": "AUTO_SHAPE (1)",
+        "has_text": true,
+        "text": " 프로젝트: 아지트(AJITEU)  Tech: Flask, Python, SQLite"
+      },
+      {
+        "idx": 4,
+        "name": "Picture 5",
+        "type": "PICTURE (13)",
+        "has_text": false
+      },
+      {
+        "idx": 5,
+        "name": "Picture 6",
+        "type": "PICTURE (13)",
+        "has_text": false
+      }
+    ]
+  }
+]
