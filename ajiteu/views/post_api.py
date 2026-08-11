@@ -169,8 +169,12 @@ def detail(post_id):
     post_form = PostForm()
     comment_form = CommentForm()
     post = Post.query.get_or_404(post_id)
-    post.view_count = (post.view_count or 0) + 1
-    db.session.commit()
+
+    # track_view=0 이면 댓글 갱신·수정 후 재조회 등에서 조회수 증가 생략
+    if request.args.get('track_view', '1') != '0':
+        post.view_count = (post.view_count or 0) + 1
+        db.session.commit()
+
     return render_template('post_detail.html', post=post, post_form=post_form, comment_form=comment_form)
 
 @bp.route('modify/<int:post_id>/', methods=('GET', 'POST'))
@@ -186,7 +190,7 @@ def modify(post_id):
         if form.validate_on_submit():
             form.populate_obj(post)
             db.session.commit()
-            return redirect(url_for('post.detail', post_id=post_id))
+            return redirect(f"{url_for('post.detail', post_id=post_id)}?track_view=0")
     else:
         form = PostForm(obj=post)
     return render_template('post_create.html', form=form, post=post, user=post.user)

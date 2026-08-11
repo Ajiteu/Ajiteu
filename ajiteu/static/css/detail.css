@@ -169,6 +169,7 @@
 
 .ajiteu-action-overlay.hidden {
     display: none !important;
+    pointer-events: none;
 }
 
 .ajiteu-action-sheet {
@@ -265,6 +266,7 @@
 
 .ajiteu-page-overlay.hidden {
     display: none !important;
+    pointer-events: none;
 }
 
 .ajiteu-page-overlay__slot {
