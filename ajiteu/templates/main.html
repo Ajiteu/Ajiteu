@@ -143,8 +143,7 @@
                             {% for post in post_list.items %}
                             <!-- 카드 아이템: div로 변경, onclick으로 포스트 상세 페이지로 이동 -->
                             <div class="card-item text-decoration-none text-reset" style="cursor: pointer;"
-                                data-post-id="{{ post.id }}"
-                                onclick="openPostDetailModal({{ post.id }}, event)">
+                                data-post-id="{{ post.id }}">
                                 <!-- 카드 상단: 사용자 프로필 정보 -->
                                 <div class="card-top">
                                     <div class="author-box">
@@ -201,20 +200,22 @@
                                 <!-- 카드 하단: 좋아요, 댓글, 조회수 -->
                                 <div class="card-bottom">
                                     <!-- 좋아요 버튼 (클릭 전파 방지) -->
-                                    <a href="javascript:void(0)" data-uri="{{ url_for('post.like', post_id=post.id) }}"
-                                        class="action-item recommend d-inline-flex align-items-center gap-1 text-decoration-none text-reset"
-                                        onclick="event.stopPropagation()"
-                                        style="border: none; background: none; cursor: pointer; padding: 0;">
+                                    <button type="button"
+                                        class="action-item d-inline-flex align-items-center gap-1 text-reset border-0 bg-transparent p-0"
+                                        data-action="like-post"
+                                        data-post-id="{{ post.id }}"
+                                        data-uri="{{ url_for('post.like', post_id=post.id) }}"
+                                        style="cursor: pointer;">
                                         <i class="icon">♥️</i><span class="like-count">{{ post.liker | length }}</span>
-                                    </a>
+                                    </button>
 
-                                    <!-- 댓글 버튼 (클릭 전파 방지) -->
-                                    <a href="{{ url_for('post.detail', post_id=post.id) }}#comments" class="action-item"
-                                        onclick="event.stopPropagation(); openPostDetailModal({{ post.id }}, event);"
-                                        style="text-decoration: none; color: inherit;">
-                                        <i class="icon">🗨️</i><span class="comment-count">{{ post.comment_set | length
-                                            }}</span>
-                                    </a>
+                                    <button type="button"
+                                        class="action-item d-inline-flex align-items-center gap-1 text-reset border-0 bg-transparent p-0"
+                                        data-action="open-comments"
+                                        data-post-id="{{ post.id }}"
+                                        style="cursor: pointer; color: inherit;">
+                                        <i class="icon">🗨️</i><span class="comment-count">{{ post.comment_set | length }}</span>
+                                    </button>
 
                                     <!-- 조회수 (읽기 전용) -->
                                     <span class="action-item"
@@ -888,7 +889,90 @@
             }
         }
 
-        async function openPostDetailModal(postId, event) {
+        async function handlePostLikeClick(button) {
+            const likeUri = button.dataset.uri;
+            const postId = Number(button.dataset.postId);
+            if (!likeUri || !postId || Number.isNaN(postId)) {
+                alert('추천 요청 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            if (!confirm('정말로 추천하시겠습니까?')) return;
+
+            try {
+                const response = await fetch(likeUri, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                if (data.success) {
+                    const card = findPostCard(postId);
+                    const likeEl = card?.querySelector('.like-count');
+                    if (likeEl) likeEl.textContent = data.like_count;
+
+                    const modal = getPostDetailModal();
+                    const openPostId = Number(modal?.querySelector('#commentForm')?.dataset.postId);
+                    if (openPostId === postId) {
+                        const modalLike = modal.querySelector('#bottomLikeCount');
+                        if (modalLike) modalLike.textContent = data.like_count;
+                    }
+                    alert(data.message || '추천했습니다.');
+                } else {
+                    alert(data.message || '추천할 수 없습니다.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('추천 처리 중 오류가 발생했습니다.');
+            }
+        }
+
+        function bindPostGridDelegation() {
+            const grid = document.getElementById('postGrid');
+            if (!grid || grid.dataset.delegationBound === '1') return;
+            grid.dataset.delegationBound = '1';
+
+            grid.addEventListener('click', async (event) => {
+                const likeBtn = event.target.closest('[data-action="like-post"]');
+                if (likeBtn && grid.contains(likeBtn)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    await handlePostLikeClick(likeBtn);
+                    return;
+                }
+
+                const commentBtn = event.target.closest('[data-action="open-comments"]');
+                if (commentBtn && grid.contains(commentBtn)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const postId = Number(commentBtn.dataset.postId);
+                    if (postId && !Number.isNaN(postId)) {
+                        await openPostDetailModal(postId, event, {
+                            trackView: false,
+                            scrollToComments: true,
+                        });
+                    }
+                    return;
+                }
+
+                if (event.target.closest('.post-more-btn, .author-avatar, .author-name')) {
+                    return;
+                }
+
+                const card = event.target.closest('.card-item[data-post-id]');
+                if (!card || !grid.contains(card)) return;
+
+                const postId = Number(card.dataset.postId);
+                if (!postId || Number.isNaN(postId)) return;
+
+                event.preventDefault();
+                await openPostDetailModal(postId, event, { trackView: true });
+            });
+        }
+
+        async function openPostDetailModal(postId, event, options = {}) {
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -912,9 +996,13 @@
 
             try {
                 const openPostId = getOpenDetailPostId();
-                const shouldTrackView = openPostId !== numericPostId;
+                const shouldTrackView = options.trackView !== undefined
+                    ? options.trackView
+                    : openPostId !== numericPostId;
+                const scrollToComments = options.scrollToComments
+                    ?? event?.currentTarget?.hash === '#comments';
                 const loaded = await loadPostDetailIntoSlot(slot, numericPostId, {
-                    scrollToComments: event?.currentTarget?.hash === '#comments',
+                    scrollToComments,
                     trackView: shouldTrackView,
                 });
                 if (!loaded) return;
@@ -1189,6 +1277,8 @@
                     dst.textContent = src.textContent;
                 }
             });
+
+            syncPostCardFromDetailDoc(numericPostId, doc);
 
             return true;
         }
@@ -1483,6 +1573,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             resetModalUiState();
+            bindPostGridDelegation();
             bindWeeklyDiscoveryClicks();
         });
         window.addEventListener('pageshow', (event) => {
@@ -1544,7 +1635,7 @@
     <script>
         const recommend_elements = document.getElementsByClassName('recommend');
         Array.from(recommend_elements).forEach(function (element) {
-            if (element.closest('#postDetailModal')) return;
+            if (element.closest('#postDetailModal') || element.closest('#postGrid')) return;
             element.addEventListener('click', function (e) {
                 e.preventDefault();
 
