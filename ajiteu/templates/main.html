@@ -58,10 +58,9 @@
                     <div class="user-name fw-bold" id="userName">{{ g.user.nickname }}</div>
                 </a>
                 <!-- 프로필 소개 링크 -->
-                <a href="{{ url_for('profile.detail', username_id=g.user.id) }}" class="text-decoration-none text-reset"
-                    onclick="openProfileModal(event)">
+                <a href="{{ url_for('profile.detail', username_id=g.user.id) }}" class="text-decoration-none text-reset">
                     <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
-                    <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro }}</div>
+                    <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro or '소개글을 작성해 보세요.' }}</div>
                 </a>
                 {% endif %}
             </div>
@@ -124,7 +123,7 @@
                 </h1>
                 <form class="search-box-wrap" method="GET" action="{{ url_for('post._list', username_id=user.id) }}">
                     <input type="hidden" name="category" value="{{ current_category|default('all') }}">
-                    <input type="text" id="searchInput" name="kw" class="search-input" placeholder="검색어를 입력하세요..."
+                    <input type="text" id="searchInput" name="kw" class="search-input" placeholder="무엇이 궁금하세요?"
                         value="{{ kw|default('') }}">
                     <button type="submit" id="searchBtn" class="search-btn">검색</button>
                 </form>
@@ -204,27 +203,28 @@
                                         class="action-item recommend d-inline-flex align-items-center gap-1 text-decoration-none text-reset"
                                         onclick="event.stopPropagation()"
                                         style="border: none; background: none; cursor: pointer; padding: 0;">
-                                        <i class="icon">👍</i><span class="like-count">{{ post.liker | length }}</span>
+                                        <i class="icon">♥️</i><span class="like-count">{{ post.liker | length }}</span>
                                     </a>
 
                                     <!-- 댓글 버튼 (클릭 전파 방지) -->
                                     <a href="{{ url_for('post.detail', post_id=post.id) }}#comments" class="action-item"
                                         onclick="event.stopPropagation(); openPostDetailModal({{ post.id }}, event);"
                                         style="text-decoration: none; color: inherit;">
-                                        <i class="icon">💬</i><span class="comment-count">{{ post.comment_set | length
+                                        <i class="icon">🗨️</i><span class="comment-count">{{ post.comment_set | length
                                             }}</span>
                                     </a>
 
                                     <!-- 조회수 (읽기 전용) -->
                                     <span class="action-item"
                                         style="display: inline-flex; align-items: center; gap: 4px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round"
                                             style="vertical-align: middle;">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
+                                        </svg> -->
+                                        <i class="icon">👀</i>
                                         <span class="view-count">{{ post.view_count or 0 }}</span>
                                     </span>
                                 </div>
@@ -318,7 +318,7 @@
                 <!-- 4. 우측 사이드바 -->
                 <aside class="sidebar-right bg-white border-start p-4">
                     <div class="widget-block mb-4">
-                        <div class="widget-title fw-bold mb-3">카테고리</div>
+                        <div class="widget-title fw-bold mb-3">취향따라보기</div>
                         <ul class="widget-list list-unstyled d-flex flex-column gap-2 m-0 p-0">
                             {% set categories = [('all', '전체'), ('travel', '여행'), ('exercise', '운동'), ('food', '음식')] %}
                             {% for cat_key, cat_label in categories %}
@@ -339,7 +339,7 @@
                     <hr class="divider-short my-3">
 
                     <div class="widget-block">
-                        <div class="widget-title fw-bold mb-3">주간 트렌드</div>
+                        <div class="widget-title fw-bold mb-3">이번주의 발견</div>
                         <ul class="widget-list trend list-unstyled d-flex flex-column gap-2 m-0 p-0">
                             {% if weekly_trends|default([]) %}
                             {% for trend_post in weekly_trends %}

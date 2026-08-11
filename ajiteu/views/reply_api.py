@@ -18,7 +18,11 @@ def create_reply(comment_id):
         db.session.add(reply)
         db.session.commit()
         return redirect(url_for('post.detail', post_id=comment.post.id))
-    return render_template('reply.html', form=form)
+
+    # sinae : 811 내용이 없거나 폼 검증 실패
+    flash('답글 내용을 입력해주세요', 'warning')
+    return redirect('post.detail', post_id=comment.post.id)
+    # return render_template('reply.html', form=form)
 
 #comment의 답변(reply) 수정
 # sinae : 809 수정
