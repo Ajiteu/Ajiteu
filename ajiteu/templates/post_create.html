@@ -2,7 +2,7 @@
 {% block content %}
 <!-- 새글 작성 팝업 모달 -->
 <!-- sinae : 808 새글쓰기와 게시글 수정 나누기 -->
-<div id="postModal" class="modal-overlay-write" style="display: flex;">
+<div id="postModal" class="modal-overlay-write active">
 
     <div class="modal-write-card">
         <div class="border-bottom pb-2 mb-3">
@@ -32,14 +32,14 @@
                 </div>
                 {% if post %}
                     <div class="d-flex justify-content-end gap-2 pt-2">
-                        <a href="{{ url_for('post._list', username_id=user.id) }}" class="btn btn-secondary btn-sm px-3"
-                            id="btnCancelWrite">취소</a>
+                        <button type="button" class="btn btn-secondary btn-sm px-3 js-close-page-overlay"
+                            data-fallback="{{ url_for('post._list', username_id=user.id) }}">취소</button>
                         <button type="submit" class="btn btn-primary btn-sm px-3">수정하기</button>
                     </div>
                 {% else %}
                     <div class="d-flex justify-content-end gap-2 pt-2">
-                        <a href="{{ url_for('post._list', username_id=user.id) }}" class="btn btn-secondary btn-sm px-3"
-                            id="btnCancelWrite">취소</a>
+                        <button type="button" class="btn btn-secondary btn-sm px-3 js-close-page-overlay"
+                            data-fallback="{{ url_for('post._list', username_id=user.id) }}">취소</button>
                         <button type="submit" class="btn btn-primary btn-sm px-3">등록하기</button>
                     </div>
                 {% endif %}
