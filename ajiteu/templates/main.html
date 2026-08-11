@@ -59,8 +59,7 @@
                 </a>
                 <!-- 프로필 소개 링크 -->
                 <a href="/profile" class="text-decoration-none text-reset">
-                    <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
-                    <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro }}</div>
+                     <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro or '소개글이 없습니다.' }}</div>
                 </a>
                 {% endif %}
             </div>
