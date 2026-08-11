@@ -27,9 +27,9 @@
                     {% if g.user == post.user %}
                     <button type="button" class="post-more-btn"
                         onclick="openAjiteuActionSheet(this);"
+                        data-post-id="{{ post.id }}"
                         data-delete-uri="{{ url_for('post.delete', post_id=post.id) }}"
                         data-modify-uri="{{ url_for('post.modify', post_id=post.id) }}"
-                        data-view-uri="{{ url_for('post.detail', post_id=post.id) }}"
                         data-is-owner="1"
                         aria-label="게시물 메뉴">⋯</button>
                     {% endif %}

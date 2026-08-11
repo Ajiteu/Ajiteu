@@ -1,0 +1,104 @@
+[
+  {
+    "i": 1,
+    "texts": [
+      "팀 프로젝트 '아지트(AJITEU)'\u000b 팀 발표",
+      "Flask & Python 기반 커뮤니티 SNS | GitHub: github.com/t01040588614-source/Ajiteu"
+    ]
+  },
+  {
+    "i": 2,
+    "texts": [
+      "SECTION 01",
+      "프로젝트 개요",
+      "나만의 공간이자 소통의 장, 커뮤니티 플랫폼 '아지트'의 기획 목적 및 핵심 컨셉"
+    ]
+  },
+  {
+    "i": 3,
+    "texts": [
+      "직관적인 3단 소셜 레이아웃",
+      "사용자 편의성을 최우선으로 고려한 모던 인터페이스를 제공합니다.",
+      "좌측 사이드바: 로그인 정보, 프로필 설정, 내 글 모아보기 등 개인화 메뉴 배치",
+      "중앙 메인 피드: 2열 카드 그리드, 반투명 overlay 모달 상세보기, 좋아요/댓글/조회수"
+    ]
+  },
+  {
+    "i": 4,
+    "texts": [
+      "사용자 및 프로필 관리",
+      "회원가입, 로그인 세션 처리와 함께 사용자 프로필 이미지 및 상태 메시지 설정, 내가 작성한 글 모아보기 기능을 제공합니다.",
+      "게시글 & Overlay 모달 UX",
+      "fetch 기반 overlay 모달로 게시물·프로필·글쓰기 팝업, 다중 이미지 갤러리(Carousel), 댓글/답글 작성·수정·삭제, ⋯ 액션 메뉴, 조회수 카운팅을 지원합니다."
+    ]
+  },
+  {
+    "i": 5,
+    "texts": [
+      "SECTION 02",
+      "기술 아키텍처",
+      "확장성과 유지보수성을 극대화한 백엔드 모듈 구조 및 디렉토리 설계를 소개합니다."
+    ]
+  },
+  {
+    "i": 6,
+    "texts": [
+      "체계적인 3-Tier 모듈화 설계",
+      "Flask 프레임워크의 Application Factory 패턴과 Blueprint 구조를 적용하였습니다.",
+      "views/ : 기능별 라우팅 및 RESTful API 엔드포인트 분리",
+      "templates/ : Jinja2 기반의 HTML 템플릿 상속 및 재사용"
+    ]
+  },
+  {
+    "i": 7,
+    "texts": [
+      "View & Controller 모듈",
+      "역할에 맞춰 백엔드 파이썬 로직을 세분화하여 코드 독립성을 확보하였습니다.",
+      "RESTful API 모듈",
+      "페이지 전체 리로드 없이 빠른 인터랙션을 지원하는 API 서버 구축"
+    ]
+  },
+  {
+    "i": 8,
+    "texts": [
+      "SECTION 03",
+      "데이터베이스 & UX 설계",
+      "SQLAlchemy ORM을 활용한 데이터 모델링 및 사용자 중심 인터페이스 구현"
+    ]
+  },
+  {
+    "i": 9,
+    "texts": [
+      "데이터 모델링 & 프론트엔드",
+      "ORM 기반 관계형 DB 설계",
+      "SQLAlchemy ORM을 도입하여 객체지향적인 데이터 모델링을 수행했습니다. User, Post, Comment, Reply, Like 엔티티 간의 1:N 및 N:M 관계를 정의하였습니다.",
+      "openPostDetailModal(), openProfileModal(), openWriteModal() 등 overlay JS와 detail.css/components.css로 모달·갤러리·액션시트 UI를 구현했습니다."
+    ]
+  },
+  {
+    "i": 10,
+    "texts": [
+      "100%",
+      "모듈화 및 아키텍처 완성도",
+      "클린 코드와 높은 유지보수성 확보",
+      "Blueprint 모듈 분리, overlay 모달 UX, 댓글 삭제/수정 버그 해결로 사용자 경험과 코드 유지보수성을 동시에 개선했습니다."
+    ]
+  },
+  {
+    "i": 11,
+    "texts": [
+      "1. 기획 & DB 설계",
+      "요구사항 분석, 화면 와이어프레임 설계, SQLAlchemy ORM 모델링 (`models.py`)",
+      "2. 백엔드 API 구현",
+      "Blueprint 기반 Views 구축, Auth 인증 및 RESTful API 서버 로직 구현"
+    ]
+  },
+  {
+    "i": 12,
+    "texts": [
+      "Questions & Answers",
+      "경청해 주셔서 감사합니다.\u000bGitHub: github.com/t01040588614-source/Ajiteu",
+      "프로젝트: 아지트(AJITEU)  |  Tech: Flask, Python, SQLite, Bootstrap 5"
+    ]
+  }
+]

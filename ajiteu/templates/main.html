@@ -143,6 +143,7 @@
                             {% for post in post_list.items %}
                             <!-- 카드 아이템: div로 변경, onclick으로 포스트 상세 페이지로 이동 -->
                             <div class="card-item text-decoration-none text-reset" style="cursor: pointer;"
+                                data-post-id="{{ post.id }}"
                                 onclick="openPostDetailModal({{ post.id }}, event)">
                                 <!-- 카드 상단: 사용자 프로필 정보 -->
                                 <div class="card-top">
@@ -170,9 +171,9 @@
                                     {% if g.user == post.user %}
                                     <button type="button" class="post-more-btn"
                                         onclick="event.stopPropagation(); openAjiteuActionSheet(this);"
+                                        data-post-id="{{ post.id }}"
                                         data-delete-uri="{{ url_for('post.delete', post_id=post.id) }}"
                                         data-modify-uri="{{ url_for('post.modify', post_id=post.id) }}"
-                                        data-view-uri="{{ url_for('post.detail', post_id=post.id) }}"
                                         data-is-owner="1"
                                         aria-label="게시물 메뉴">⋯</button>
                                     {% endif %}
@@ -384,10 +385,174 @@
         let commentFormCreateAction = null;
         let editingCommentId = null;
         let overlayLoading = false;
+        let reopenDetailPostIdAfterModify = null;
+        let postDetailViewTrackingId = null;
 
         function extractPostIdFromUri(uri) {
-            const match = uri && uri.match(/\/post\/detail\/(\d+)\/?/);
-            return match ? Number(match[1]) : null;
+            if (!uri) return null;
+            const patterns = [
+                /\/post\/detail\/(\d+)\/?/,
+                /\/post\/modify\/(\d+)\/?/,
+                /\/post\/delete\/(\d+)\/?/,
+            ];
+            for (const pattern of patterns) {
+                const match = uri.match(pattern);
+                if (match) return Number(match[1]);
+            }
+            return null;
+        }
+
+        function findPostCard(postId) {
+            const numericPostId = Number(postId);
+            if (!numericPostId || Number.isNaN(numericPostId)) return null;
+
+            const byId = document.querySelector(`#postGrid .card-item[data-post-id="${numericPostId}"]`);
+            if (byId) return byId;
+
+            return [...document.querySelectorAll('#postGrid .card-item')].find((el) => {
+                const cardPostId = Number(el.dataset.postId);
+                if (cardPostId === numericPostId) return true;
+                const onclick = el.getAttribute('onclick') || '';
+                return onclick.includes(`openPostDetailModal(${numericPostId}`);
+            }) || null;
+        }
+
+        function getOpenDetailPostId() {
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            const postId = slot?.querySelector('#commentForm')?.dataset.postId;
+            const numericPostId = Number(postId);
+            return numericPostId && !Number.isNaN(numericPostId) ? numericPostId : null;
+        }
+
+        function extractViewCountFromDetailDoc(doc) {
+            if (!doc) return null;
+            const el = doc.querySelector('#postDetailModal #bottomViewCount')
+                || doc.getElementById('bottomViewCount');
+            if (!el) return null;
+            const value = Number(String(el.textContent).trim());
+            return Number.isNaN(value) ? null : value;
+        }
+
+        function applyViewCountToCard(postId, viewCount) {
+            const card = findPostCard(postId);
+            const viewEl = card?.querySelector('.view-count');
+            if (!viewEl || viewCount == null) return false;
+            viewEl.textContent = String(viewCount);
+            return true;
+        }
+
+        function updatePostCardViewCount(postId, viewCount) {
+            applyViewCountToCard(postId, viewCount);
+        }
+
+        function syncPostCardFromDetailDoc(postId, doc) {
+            const card = findPostCard(postId);
+            if (!card || !doc) return;
+
+            const contentEl = doc.getElementById('detailContent');
+            const desc = card.querySelector('.card-desc');
+            if (contentEl && desc) {
+                const text = contentEl.textContent.trim();
+                desc.textContent = text.length > 150 ? text.slice(0, 150) : text;
+            }
+
+            [
+                ['bottomViewCount', '.view-count'],
+                ['bottomCommentCount', '.comment-count'],
+                ['bottomLikeCount', '.like-count'],
+            ].forEach(([srcId, dstSel]) => {
+                const src = doc.getElementById(srcId);
+                const dst = card.querySelector(dstSel);
+                if (src && dst) dst.textContent = src.textContent;
+            });
+        }
+
+        async function fetchPostDetailDoc(postId, trackView = false) {
+            const numericPostId = Number(postId);
+            const response = await fetch(getPostDetailFetchUrl(numericPostId, trackView), {
+                credentials: 'same-origin',
+            });
+            if (!response.ok) return null;
+            return new DOMParser().parseFromString(await response.text(), 'text/html');
+        }
+
+        async function refreshPostInUI(postId) {
+            const numericPostId = Number(postId);
+            if (!numericPostId || Number.isNaN(numericPostId)) return false;
+
+            const doc = await fetchPostDetailDoc(numericPostId, false);
+            if (!doc) {
+                alert('게시글 정보를 불러오지 못했습니다.');
+                return false;
+            }
+
+            syncPostCardFromDetailDoc(numericPostId, doc);
+
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            const openDetail = slot?.querySelector('#postDetailModal');
+            const openPostId = openDetail?.querySelector('#commentForm')?.dataset.postId;
+            if (openDetail && Number(openPostId) === numericPostId) {
+                await reloadPostDetailInOverlay(numericPostId, false);
+            }
+
+            return true;
+        }
+
+        function removePostCard(postId) {
+            const card = findPostCard(postId);
+            if (card) card.remove();
+        }
+
+        async function handlePostDeleteInUI(deleteUri) {
+            const postId = extractPostIdFromUri(deleteUri);
+            if (!postId) {
+                alert('삭제 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch(deleteUri, {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                });
+
+                if (response.ok || response.redirected) {
+                    removePostCard(postId);
+                    const slot = document.getElementById('ajiteuPageOverlaySlot');
+                    const openPostId = slot?.querySelector('#commentForm')?.dataset.postId;
+                    if (openPostId && Number(openPostId) === postId) {
+                        closeAjiteuPageOverlay();
+                    }
+                } else {
+                    alert('게시글 삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('게시글 삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function openPostDetailModalWithoutViewBump(postId) {
+            const numericPostId = Number(postId);
+            if (!numericPostId || Number.isNaN(numericPostId)) return;
+
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!slot || overlayLoading) return;
+
+            overlayLoading = true;
+            commentFormCreateAction = null;
+            editingCommentId = null;
+            slot.innerHTML = '<p class="ajiteu-page-overlay__loading">불러오는 중...</p>';
+            openAjiteuPageOverlay();
+
+            try {
+                await loadPostDetailIntoSlot(slot, numericPostId, { trackView: false });
+            } catch (error) {
+                showOverlayError(slot, '게시글을 불러오지 못했습니다.');
+                console.error(error);
+            } finally {
+                overlayLoading = false;
+            }
         }
 
         function isDetailModalInOverlay() {
@@ -447,7 +612,6 @@
 
             const deleteUri = triggerEl.dataset.deleteUri || '';
             const modifyUri = triggerEl.dataset.modifyUri || '';
-            const viewUri = triggerEl.dataset.viewUri || '';
             const isOwner = triggerEl.dataset.isOwner === '1';
 
             list.innerHTML = '';
@@ -455,11 +619,10 @@
             if (isOwner && deleteUri) {
                 const deleteItem = document.createElement('li');
                 deleteItem.innerHTML = '<button type="button" class="ajiteu-action-item ajiteu-action-item--danger" data-action="delete">삭제</button>';
-                deleteItem.querySelector('button').addEventListener('click', () => {
+                deleteItem.querySelector('button').addEventListener('click', async () => {
                     closeAjiteuActionSheet();
-                    if (confirm('정말로 삭제하시겠습니까?')) {
-                        location.href = deleteUri;
-                    }
+                    if (!confirm('정말로 삭제하시겠습니까?')) return;
+                    await handlePostDeleteInUI(deleteUri);
                 });
                 list.appendChild(deleteItem);
             }
@@ -469,24 +632,17 @@
                 editItem.innerHTML = '<button type="button" class="ajiteu-action-item" data-action="edit">수정</button>';
                 editItem.querySelector('button').addEventListener('click', () => {
                     closeAjiteuActionSheet();
+                    const postId = extractPostIdFromUri(modifyUri);
+                    const slot = document.getElementById('ajiteuPageOverlaySlot');
+                    const detailPostId = slot?.querySelector('#commentForm')?.dataset.postId;
+                    reopenDetailPostIdAfterModify = (
+                        postId
+                        && detailPostId
+                        && Number(detailPostId) === postId
+                    ) ? postId : null;
                     openWriteModalFromUri(modifyUri);
                 });
                 list.appendChild(editItem);
-            }
-
-            if (viewUri) {
-                const viewItem = document.createElement('li');
-                viewItem.innerHTML = '<button type="button" class="ajiteu-action-item" data-action="view">게시물로 이동</button>';
-                viewItem.querySelector('button').addEventListener('click', () => {
-                    closeAjiteuActionSheet();
-                    const postId = extractPostIdFromUri(viewUri);
-                    if (postId) {
-                        openPostDetailModal(postId);
-                    } else {
-                        window.location.href = viewUri;
-                    }
-                });
-                list.appendChild(viewItem);
             }
 
             if (!list.children.length) {
@@ -628,6 +784,8 @@
             overlay.setAttribute('aria-hidden', 'true');
             if (slot) slot.innerHTML = '';
 
+            postDetailViewTrackingId = null;
+
             const actionOverlay = document.getElementById('ajiteuActionOverlay');
             const actionOpen = actionOverlay && !actionOverlay.classList.contains('hidden');
             if (!actionOpen) {
@@ -665,16 +823,33 @@
             }
 
             const trackView = options.trackView !== false;
-            const response = await fetch(getPostDetailFetchUrl(numericPostId, trackView), {
+            if (trackView && postDetailViewTrackingId === numericPostId) {
+                options = { ...options, trackView: false };
+            }
+
+            const shouldTrackView = options.trackView !== false;
+            if (shouldTrackView) {
+                postDetailViewTrackingId = numericPostId;
+            }
+
+            const response = await fetch(getPostDetailFetchUrl(numericPostId, shouldTrackView), {
                 credentials: 'same-origin',
             });
             if (!response.ok) {
+                if (shouldTrackView && postDetailViewTrackingId === numericPostId) {
+                    postDetailViewTrackingId = null;
+                }
                 showOverlayError(slot, `게시글을 ${getFetchErrorMessage(response)}`);
                 return false;
             }
 
             const html = await response.text();
             const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            const viewCount = extractViewCountFromDetailDoc(doc);
+            if (viewCount != null) {
+                applyViewCountToCard(numericPostId, viewCount);
+            }
             const modal = doc.querySelector('#postDetailModal');
             if (!modal) {
                 showOverlayError(slot, '게시글 화면을 구성하지 못했습니다.');
@@ -687,6 +862,8 @@
             slot.innerHTML = '';
             slot.appendChild(modal);
             bindPostDetailOverlay(slot);
+
+            syncPostCardFromDetailDoc(numericPostId, doc);
 
             if (options.scrollToComments) {
                 setTimeout(() => slot.querySelector('#comments')?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -734,8 +911,11 @@
             openAjiteuPageOverlay();
 
             try {
+                const openPostId = getOpenDetailPostId();
+                const shouldTrackView = openPostId !== numericPostId;
                 const loaded = await loadPostDetailIntoSlot(slot, numericPostId, {
                     scrollToComments: event?.currentTarget?.hash === '#comments',
+                    trackView: shouldTrackView,
                 });
                 if (!loaded) return;
             } catch (error) {
@@ -856,6 +1036,47 @@
             const modal = root.querySelector('#postModal');
             if (!modal || modal.dataset.writeBound === '1') return;
             modal.dataset.writeBound = '1';
+
+            const form = root.querySelector('#postForm');
+            if (form && form.dataset.boundSubmit !== '1') {
+                form.dataset.boundSubmit = '1';
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    if (form.dataset.submitting === '1') return;
+                    form.dataset.submitting = '1';
+
+                    const isModify = form.action.includes('/modify/');
+                    const postId = extractPostIdFromUri(form.action);
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: new FormData(form),
+                            credentials: 'same-origin',
+                        });
+
+                        if (response.ok || response.redirected) {
+                            if (isModify && postId) {
+                                closeAjiteuPageOverlay();
+                                await refreshPostInUI(postId);
+                                if (reopenDetailPostIdAfterModify === postId) {
+                                    reopenDetailPostIdAfterModify = null;
+                                    await openPostDetailModalWithoutViewBump(postId);
+                                }
+                            } else {
+                                window.location.href = response.url || form.action;
+                            }
+                        } else {
+                            alert('요청 처리에 실패했습니다.');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert('요청 처리 중 오류가 발생했습니다.');
+                    } finally {
+                        delete form.dataset.submitting;
+                    }
+                });
+            }
 
             const imageInput = root.querySelector('#imageUploadInput');
             const previewContainer = root.querySelector('#imagePreview');
