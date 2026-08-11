@@ -58,7 +58,8 @@
                     <div class="user-name fw-bold" id="userName">{{ g.user.nickname }}</div>
                 </a>
                 <!-- 프로필 소개 링크 -->
-                <a href="/profile" class="text-decoration-none text-reset">
+                <a href="{{ url_for('profile.detail', username_id=g.user.id) }}" class="text-decoration-none text-reset">
+                    <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
                     <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro or '소개글을 작성해 보세요.' }}</div>
                 </a>
                 {% endif %}
@@ -69,7 +70,8 @@
             <div class="menu-section d-flex flex-column align-items-center gap-3">
                 {% if g.user %}
                 <a href="{{ url_for('post.create', username_id=g.user.id) if g.user else url_for('auth.login') }}"
-                    class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold">글쓰기</a>
+                    class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold"
+                    onclick="openWriteModal(event)">글쓰기</a>
                 {% else %}
                 <a href="{{ url_for('auth.login') }}"
                     class="btn-pill btn-write w-100 text-decoration-none text-center fw-semibold">글쓰기</a>
@@ -80,7 +82,8 @@
 
                 {% if g.user %}
                 <a href="{{ url_for('profile.detail', username_id=g.user.id) }}"
-                    class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold">프로필
+                    class="btn-pill btn-profile w-100 text-decoration-none text-center fw-semibold"
+                    onclick="openProfileModal(event)">프로필
                     설정</a>
                 {% else %}
                 <a href="{{ url_for('auth.login') }}"
@@ -120,7 +123,7 @@
                 </h1>
                 <form class="search-box-wrap" method="GET" action="{{ url_for('post._list', username_id=user.id) }}">
                     <input type="hidden" name="category" value="{{ current_category|default('all') }}">
-                    <input type="text" id="searchInput" name="kw" class="search-input" placeholder="검색어를 입력하세요..."
+                    <input type="text" id="searchInput" name="kw" class="search-input" placeholder="무엇이 궁금하세요?"
                         value="{{ kw|default('') }}">
                     <button type="submit" id="searchBtn" class="search-btn">검색</button>
                 </form>
@@ -139,7 +142,7 @@
                             {% for post in post_list.items %}
                             <!-- 카드 아이템: div로 변경, onclick으로 포스트 상세 페이지로 이동 -->
                             <div class="card-item text-decoration-none text-reset" style="cursor: pointer;"
-                                onclick="location.href='{{ url_for('post.detail', post_id=post.id) }}'">
+                                onclick="openPostDetailModal({{ post.id }}, event)">
                                 <!-- 카드 상단: 사용자 프로필 정보 -->
                                 <div class="card-top">
                                     <div class="author-box">
@@ -164,19 +167,13 @@
                                     <!-- sinae : 809 메인에서 작성자만 보이는 '...' 표시 - 삭제, 수정 가능 -->
 
                                     {% if g.user == post.user %}
-                                    <div class="dropdown" onclick="event.stopPropagation()">
-
-                                        <button class="btn btn-link text-dark text-decoration-none p-1" type="button"
-                                            id="btnDetailMore" data-bs-toggle="dropdown" aria-expanded="false">
-                                            ⋯
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="btnDetailMore">
-                                            <a href="javascript:void(0)"
-                                                data-uri="{{ url_for('post.delete', post_id=post.id) }}"
-                                                class="delete small dropdown-item text-danger">삭제</a>
-                                            <a href="{{ url_for('post.modify', post_id=post.id) }}"
-                                                class="small dropdown-item">수정</a>
-                                    </div>
+                                    <button type="button" class="post-more-btn"
+                                        onclick="event.stopPropagation(); openAjiteuActionSheet(this);"
+                                        data-delete-uri="{{ url_for('post.delete', post_id=post.id) }}"
+                                        data-modify-uri="{{ url_for('post.modify', post_id=post.id) }}"
+                                        data-view-uri="{{ url_for('post.detail', post_id=post.id) }}"
+                                        data-is-owner="1"
+                                        aria-label="게시물 메뉴">⋯</button>
                                     {% endif %}
 
                                 </div>
@@ -211,7 +208,7 @@
 
                                     <!-- 댓글 버튼 (클릭 전파 방지) -->
                                     <a href="{{ url_for('post.detail', post_id=post.id) }}#comments" class="action-item"
-                                        onclick="event.stopPropagation()"
+                                        onclick="event.stopPropagation(); openPostDetailModal({{ post.id }}, event);"
                                         style="text-decoration: none; color: inherit;">
                                         <i class="icon">🗨️</i><span class="comment-count">{{ post.comment_set | length
                                             }}</span>
@@ -244,42 +241,48 @@
 
 
 
-                    <!-- 하단 고정 페이지네이션 -->
+                    <!-- 하단 페이지네이션 (메인 · 내가 쓴 글 공통) -->
                     {% if post_list %}
-                    <ul
-                        class="pagination-bar d-flex justify-content-center align-items-center gap-2 mt-4 list-unstyled">
-                        {% if post_list.has_prev %}
-                        <li>
-                            <a
-                                href="{{ url_for('post._list', username_id=user.id, page=post_list.prev_num, category=current_category|default('all'), kw=kw|default('')) }}">◁</a>
-                        </li>
-                        {% else %}
-                        <li><a href="#" class="page-link disabled">&lt;&lt;</a></li>
-                        {% endif %}
+                    <nav class="pagination-bar mt-4" aria-label="페이지네이션">
+                        <ul class="pagination-inner list-unstyled">
+                            <li class="page-item">
+                                {% if post_list.has_prev %}
+                                <a class="page-link page-arrow"
+                                    href="{{ url_for('post._list', username_id=user.id, page=post_list.prev_num, category=current_category|default('all'), kw=kw|default('')) }}"
+                                    aria-label="이전 페이지">‹</a>
+                                {% else %}
+                                <span class="page-link page-arrow disabled" aria-hidden="true">‹</span>
+                                {% endif %}
+                            </li>
 
-                        {% for page_num in post_list.iter_pages() %}
-                        {% if page_num %}
-                        {% if page_num != post_list.page %}
-                        <li><a
-                                href="{{ url_for('post._list', username_id=user.id, page=page_num, category=current_category|default('all'), kw=kw|default('')) }}">{{
-                                page_num }}</a></li>
-                        {% else %}
-                        <li><a href="#" class="page-link active">{{ page_num }}</a></li>
-                        {% endif %}
-                        {% else %}
-                        <li><a href="#" class="page-link ellipsis" aria-disabled="true">...</a></li>
-                        {% endif %}
-                        {% endfor %}
+                            {% for page_num in post_list.iter_pages() %}
+                            {% if page_num %}
+                            <li class="page-item">
+                                {% if page_num != post_list.page %}
+                                <a class="page-link"
+                                    href="{{ url_for('post._list', username_id=user.id, page=page_num, category=current_category|default('all'), kw=kw|default('')) }}">{{ page_num }}</a>
+                                {% else %}
+                                <span class="page-link active" aria-current="page">{{ page_num }}</span>
+                                {% endif %}
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <span class="page-link ellipsis" aria-hidden="true">…</span>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
 
-                        {% if post_list.has_next %}
-                        <li>
-                            <a
-                                href="{{ url_for('post._list', username_id=user.id, page=post_list.next_num, category=current_category|default('all'), kw=kw|default('')) }}">▻</a>
-                        </li>
-                        {% else %}
-                        <li><a href="#" class="page-link disabled" tabindex="-1" aria-disabled="true">&gt;&gt;</a></li>
-                        {% endif %}
-                    </ul>
+                            <li class="page-item">
+                                {% if post_list.has_next %}
+                                <a class="page-link page-arrow"
+                                    href="{{ url_for('post._list', username_id=user.id, page=post_list.next_num, category=current_category|default('all'), kw=kw|default('')) }}"
+                                    aria-label="다음 페이지">›</a>
+                                {% else %}
+                                <span class="page-link page-arrow disabled" aria-hidden="true">›</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </nav>
                     {% endif %}
                 </main>
 
@@ -315,7 +318,7 @@
                 <!-- 4. 우측 사이드바 -->
                 <aside class="sidebar-right bg-white border-start p-4">
                     <div class="widget-block mb-4">
-                        <div class="widget-title fw-bold mb-3">카테고리</div>
+                        <div class="widget-title fw-bold mb-3">취향따라보기</div>
                         <ul class="widget-list list-unstyled d-flex flex-column gap-2 m-0 p-0">
                             {% set categories = [('all', '전체'), ('travel', '여행'), ('exercise', '운동'), ('food', '음식')] %}
                             {% for cat_key, cat_label in categories %}
@@ -336,13 +339,14 @@
                     <hr class="divider-short my-3">
 
                     <div class="widget-block">
-                        <div class="widget-title fw-bold mb-3">주간 트렌드</div>
+                        <div class="widget-title fw-bold mb-3">이번주의 발견</div>
                         <ul class="widget-list trend list-unstyled d-flex flex-column gap-2 m-0 p-0">
                             {% if weekly_trends|default([]) %}
                             {% for trend_post in weekly_trends %}
                             <li class="list-item text-truncate">
                                 <a href="{{ url_for('post.detail', post_id=trend_post.id) }}"
-                                    class="text-decoration-none text-reset">
+                                    class="text-decoration-none text-reset"
+                                    onclick="openPostDetailModal({{ trend_post.id }}, event)">
                                     {{ trend_post.content[:30] }}{% if trend_post.content|length > 30 %}...{% endif %}
                                 </a>
                             </li>
@@ -361,6 +365,530 @@
 
 
     {% endblock %}
+
+    <!-- 반투명 페이지 오버레이 (게시물 · 프로필) -->
+    <div id="ajiteuPageOverlay" class="ajiteu-page-overlay hidden" aria-hidden="true">
+        <div class="ajiteu-page-overlay__slot" id="ajiteuPageOverlaySlot"></div>
+    </div>
+
+    <!-- 인스타 스타일 ⋯ 액션 팝업 -->
+    <div id="ajiteuActionOverlay" class="ajiteu-action-overlay hidden" aria-hidden="true">
+        <div class="ajiteu-action-sheet" role="dialog" aria-modal="true" aria-label="게시물 메뉴">
+            <ul class="ajiteu-action-list" id="ajiteuActionList"></ul>
+        </div>
+    </div>
+
+    <script>
+        let commentFormCreateAction = null;
+        let editingCommentId = null;
+        let overlayLoading = false;
+
+        function showOverlayError(slot, message) {
+            if (!slot) return;
+            slot.innerHTML = `
+                <div class="ajiteu-page-overlay__error">
+                    <p>${message}</p>
+                    <button type="button" class="btn btn-light btn-sm js-overlay-error-close">닫기</button>
+                </div>`;
+            slot.querySelector('.js-overlay-error-close')?.addEventListener('click', closeAjiteuPageOverlay);
+        }
+
+        function getFetchErrorMessage(response) {
+            if (!response) return '네트워크 오류가 발생했습니다.';
+            if (response.status === 404) return '요청한 내용을 찾을 수 없습니다.';
+            if (response.status === 403) return '접근 권한이 없습니다.';
+            if (response.status === 401) return '로그인이 필요합니다.';
+            if (response.status >= 500) return '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+            return '불러오지 못했습니다.';
+        }
+
+        function openAjiteuActionSheet(triggerEl) {
+            const overlay = document.getElementById('ajiteuActionOverlay');
+            const list = document.getElementById('ajiteuActionList');
+            if (!overlay || !list || !triggerEl) return;
+
+            const deleteUri = triggerEl.dataset.deleteUri || '';
+            const modifyUri = triggerEl.dataset.modifyUri || '';
+            const viewUri = triggerEl.dataset.viewUri || '';
+            const isOwner = triggerEl.dataset.isOwner === '1';
+
+            list.innerHTML = '';
+
+            if (isOwner && deleteUri) {
+                const deleteItem = document.createElement('li');
+                deleteItem.innerHTML = '<button type="button" class="ajiteu-action-item ajiteu-action-item--danger" data-action="delete">삭제</button>';
+                deleteItem.querySelector('button').addEventListener('click', () => {
+                    closeAjiteuActionSheet();
+                    if (confirm('정말로 삭제하시겠습니까?')) {
+                        location.href = deleteUri;
+                    }
+                });
+                list.appendChild(deleteItem);
+            }
+
+            if (isOwner && modifyUri) {
+                const editItem = document.createElement('li');
+                editItem.innerHTML = `<a href="${modifyUri}" class="ajiteu-action-item">수정</a>`;
+                list.appendChild(editItem);
+            }
+
+            if (viewUri) {
+                const viewItem = document.createElement('li');
+                viewItem.innerHTML = `<a href="${viewUri}" class="ajiteu-action-item">게시물로 이동</a>`;
+                list.appendChild(viewItem);
+            }
+
+            if (!list.children.length) {
+                return;
+            }
+
+            const cancelItem = document.createElement('li');
+            cancelItem.innerHTML = '<button type="button" class="ajiteu-action-item ajiteu-action-item--cancel" data-action="cancel">취소</button>';
+            cancelItem.querySelector('button').addEventListener('click', closeAjiteuActionSheet);
+            list.appendChild(cancelItem);
+
+            overlay.classList.remove('hidden');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAjiteuActionSheet() {
+            const overlay = document.getElementById('ajiteuActionOverlay');
+            if (!overlay) return;
+            overlay.classList.add('hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('ajiteuActionOverlay')?.addEventListener('click', (event) => {
+            if (event.target.id === 'ajiteuActionOverlay') {
+                closeAjiteuActionSheet();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeAjiteuActionSheet();
+                closeAjiteuPageOverlay();
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            const closeBtn = event.target.closest('.js-close-page-overlay');
+            if (!closeBtn) return;
+            event.preventDefault();
+            const overlay = document.getElementById('ajiteuPageOverlay');
+            if (overlay && !overlay.classList.contains('hidden') && overlay.querySelector('#postDetailModal, #profileModal, #postModal')) {
+                closeAjiteuPageOverlay();
+            } else if (closeBtn.dataset.fallback) {
+                location.href = closeBtn.dataset.fallback;
+            } else if (window.history.length > 1) {
+                history.back();
+            } else {
+                location.href = '/';
+            }
+        });
+
+        function toggleReplyForm(commentId) {
+            if (!commentId) return;
+            const form = document.getElementById(`reply-form-${commentId}`);
+            if (!form) return;
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleReplyEditForm(replyId) {
+            if (!replyId) return;
+            const form = document.getElementById(`reply-edit-form-${replyId}`);
+            if (!form) return;
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function editComment(commentId, content) {
+            if (!commentId) return;
+
+            const form = document.getElementById('commentForm');
+            const contentEl = document.getElementById('commentContent');
+            const submitBtn = document.getElementById('commentSubmitBtn');
+            const cancelBtn = document.getElementById('commentCancelBtn');
+            if (!form || !contentEl || !submitBtn || !cancelBtn) return;
+
+            editingCommentId = commentId;
+            if (!commentFormCreateAction) {
+                commentFormCreateAction = form.action;
+            }
+            contentEl.value = content ?? '';
+            form.action = `/comment/modify/${commentId}/`;
+            submitBtn.textContent = '수정하기';
+            submitBtn.classList.add('btn-warning');
+            submitBtn.classList.remove('btn-outline-dark');
+            cancelBtn.style.display = 'block';
+            contentEl.focus();
+        }
+
+        function cancelCommentEdit() {
+            editingCommentId = null;
+
+            const form = document.getElementById('commentForm');
+            const contentEl = document.getElementById('commentContent');
+            const submitBtn = document.getElementById('commentSubmitBtn');
+            const cancelBtn = document.getElementById('commentCancelBtn');
+            if (!form || !contentEl || !submitBtn || !cancelBtn) return;
+
+            contentEl.value = '';
+            contentEl.placeholder = '댓글을 입력해주세요';
+            if (commentFormCreateAction) {
+                form.action = commentFormCreateAction;
+            }
+            submitBtn.textContent = '등록하기';
+            submitBtn.classList.remove('btn-warning');
+            submitBtn.classList.add('btn-outline-dark');
+            cancelBtn.style.display = 'none';
+        }
+
+        function openAjiteuPageOverlay() {
+            const overlay = document.getElementById('ajiteuPageOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('hidden');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAjiteuPageOverlay() {
+            const overlay = document.getElementById('ajiteuPageOverlay');
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!overlay) return;
+            overlay.classList.add('hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+            if (slot) slot.innerHTML = '';
+            document.body.style.overflow = '';
+            overlayLoading = false;
+        }
+
+        document.getElementById('ajiteuPageOverlay')?.addEventListener('click', (event) => {
+            if (event.target.id === 'ajiteuPageOverlay') {
+                closeAjiteuPageOverlay();
+            }
+        });
+
+        async function openPostDetailModal(postId, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            const numericPostId = Number(postId);
+            if (!postId || Number.isNaN(numericPostId) || numericPostId <= 0) {
+                alert('잘못된 게시글입니다.');
+                return;
+            }
+            if (overlayLoading) return;
+
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!slot) return;
+
+            overlayLoading = true;
+            commentFormCreateAction = null;
+            editingCommentId = null;
+            slot.innerHTML = '<p class="ajiteu-page-overlay__loading">불러오는 중...</p>';
+            openAjiteuPageOverlay();
+
+            try {
+                const response = await fetch(`/post/detail/${numericPostId}/`);
+                if (!response.ok) {
+                    showOverlayError(slot, `게시글을 ${getFetchErrorMessage(response)}`);
+                    return;
+                }
+
+                const html = await response.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const modal = doc.querySelector('#postDetailModal');
+                if (!modal) {
+                    showOverlayError(slot, '게시글 화면을 구성하지 못했습니다.');
+                    return;
+                }
+
+                modal.classList.remove('fade');
+                modal.style.display = 'block';
+                modal.style.background = 'transparent';
+                slot.innerHTML = '';
+                slot.appendChild(modal);
+                bindPostDetailOverlay(slot);
+
+                if (event?.currentTarget?.hash === '#comments') {
+                    setTimeout(() => slot.querySelector('#comments')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                }
+            } catch (error) {
+                showOverlayError(slot, '게시글을 불러오지 못했습니다.');
+                console.error(error);
+            } finally {
+                overlayLoading = false;
+            }
+        }
+
+        async function openProfileModal(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            const url = event?.currentTarget?.href;
+            if (!url) {
+                alert('프로필 주소를 찾을 수 없습니다.');
+                return;
+            }
+            if (overlayLoading) return;
+
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!slot) return;
+
+            overlayLoading = true;
+            slot.innerHTML = '<p class="ajiteu-page-overlay__loading">불러오는 중...</p>';
+            openAjiteuPageOverlay();
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    showOverlayError(slot, `프로필을 ${getFetchErrorMessage(response)}`);
+                    return;
+                }
+
+                const html = await response.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const modal = doc.querySelector('#profileModal');
+                if (!modal) {
+                    showOverlayError(slot, '프로필 화면을 구성하지 못했습니다.');
+                    return;
+                }
+
+                modal.classList.remove('fade');
+                modal.style.display = 'block';
+                modal.style.background = 'transparent';
+                modal.setAttribute('aria-hidden', 'false');
+                slot.innerHTML = '';
+                slot.appendChild(modal);
+                bindProfileOverlay(slot);
+            } catch (error) {
+                showOverlayError(slot, '프로필을 불러오지 못했습니다.');
+                console.error(error);
+            } finally {
+                overlayLoading = false;
+            }
+        }
+
+        async function openWriteModal(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            const url = event?.currentTarget?.href;
+            if (!url) {
+                alert('글쓰기 주소를 찾을 수 없습니다.');
+                return;
+            }
+            if (overlayLoading) return;
+
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!slot) return;
+
+            overlayLoading = true;
+            slot.innerHTML = '<p class="ajiteu-page-overlay__loading">불러오는 중...</p>';
+            openAjiteuPageOverlay();
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    showOverlayError(slot, `글쓰기 화면을 ${getFetchErrorMessage(response)}`);
+                    return;
+                }
+
+                const html = await response.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const modal = doc.querySelector('#postModal');
+                if (!modal) {
+                    showOverlayError(slot, '글쓰기 화면을 구성하지 못했습니다.');
+                    return;
+                }
+
+                modal.style.display = 'flex';
+                modal.style.background = 'transparent';
+                slot.innerHTML = '';
+                slot.appendChild(modal);
+                bindWriteOverlay(slot);
+            } catch (error) {
+                showOverlayError(slot, '글쓰기 화면을 불러오지 못했습니다.');
+                console.error(error);
+            } finally {
+                overlayLoading = false;
+            }
+        }
+
+        function bindWriteOverlay(root) {
+            if (!root) return;
+
+            const imageInput = root.querySelector('#imageUploadInput');
+            const previewContainer = root.querySelector('#imagePreview');
+            if (!imageInput || !previewContainer) return;
+
+            imageInput.addEventListener('change', (event) => {
+                previewContainer.innerHTML = '';
+                const files = event.target.files;
+                if (!files) return;
+
+                Array.from(files).forEach((file) => {
+                    if (!file.type.startsWith('image/')) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        if (!e.target?.result) return;
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-img';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.onerror = () => alert('이미지를 불러오지 못했습니다.');
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        function bindPostDetailCarousel(root) {
+            if (!root) return;
+
+            const carouselEl = root.querySelector('#postImageCarousel');
+            if (!carouselEl) return;
+
+            const items = carouselEl.querySelectorAll('.carousel-item');
+            const prevBtn = carouselEl.querySelector('.carousel-control-prev');
+            const nextBtn = carouselEl.querySelector('.carousel-control-next');
+
+            if (items.length <= 1) {
+                prevBtn?.classList.add('d-none');
+                nextBtn?.classList.add('d-none');
+                return;
+            }
+
+            if (!window.bootstrap?.Carousel) {
+                console.error('Bootstrap Carousel unavailable');
+                return;
+            }
+
+            try {
+                bootstrap.Carousel.getInstance(carouselEl)?.dispose();
+            } catch (error) {
+                console.warn('carousel dispose skipped:', error);
+            }
+
+            const carousel = new bootstrap.Carousel(carouselEl, {
+                ride: false,
+                wrap: true,
+                interval: false,
+                touch: true,
+            });
+
+            prevBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                carousel.prev();
+            });
+
+            nextBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                carousel.next();
+            });
+        }
+
+        function bindPostDetailOverlay(root) {
+            if (!root) return;
+
+            root.querySelectorAll('.delete').forEach((element) => {
+                element.addEventListener('click', function () {
+                    const deleteUri = this.dataset.uri;
+                    if (!deleteUri) {
+                        alert('삭제 주소를 찾을 수 없습니다.');
+                        return;
+                    }
+                    if (confirm('정말로 삭제하시겠습니까?')) {
+                        location.href = deleteUri;
+                    }
+                });
+            });
+
+            root.querySelectorAll('.recommend').forEach((element) => {
+                element.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const likeUri = this.dataset.uri;
+                    if (!likeUri) {
+                        alert('추천 요청 정보를 찾을 수 없습니다.');
+                        return;
+                    }
+                    if (!confirm('정말로 추천하시겠습니까?')) return;
+
+                    fetch(likeUri, { method: 'POST' })
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            if (data.success) {
+                                const likeEl = root.querySelector('#bottomLikeCount');
+                                if (likeEl) likeEl.textContent = data.like_count;
+                                alert(data.message || '추천했습니다.');
+                            } else {
+                                alert(data.message || '추천할 수 없습니다.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            alert('추천 처리 중 오류가 발생했습니다.');
+                        });
+                });
+            });
+
+            const carouselEl = root.querySelector('#postImageCarousel');
+            if (carouselEl) {
+                bindPostDetailCarousel(root);
+            }
+        }
+
+        function bindProfileOverlay(root) {
+            if (!root) return;
+
+            const photoInput = root.querySelector('#image');
+            const profileImg = root.querySelector('#profileImg');
+            const photoPlaceholder = root.querySelector('#photoPlaceholder');
+            if (!photoInput || !profileImg || !photoPlaceholder) return;
+
+            photoInput.addEventListener('change', (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('JPG, JPEG, PNG 파일만 업로드할 수 있습니다.');
+                    photoInput.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    if (!ev.target?.result) return;
+                    profileImg.src = ev.target.result;
+                    profileImg.hidden = false;
+                    photoPlaceholder.hidden = true;
+                };
+                reader.onerror = () => {
+                    alert('이미지를 불러오지 못했습니다.');
+                    photoInput.value = '';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+
     <!-- <script>
         document.addEventListener('DOMContentLoaded', () => {
             const postModal = document.getElementById('postModal');
@@ -398,9 +926,14 @@
         const delete_elements = document.getElementsByClassName('delete');
         Array.from(delete_elements).forEach(function (element) {
             element.addEventListener('click', function () {
+                const deleteUri = this.dataset.uri;
+                if (!deleteUri) {
+                    alert('삭제 주소를 찾을 수 없습니다.');
+                    return;
+                }
                 if (confirm('정말로 삭제하시겠습니까?')) {
-                    location.href = this.dataset.uri;
-                };
+                    location.href = deleteUri;
+                }
             });
         });
     </script>
@@ -410,21 +943,34 @@
             element.addEventListener('click', function (e) {
                 e.preventDefault();
 
+                const likeUri = this.dataset.uri;
+                if (!likeUri) {
+                    alert('추천 요청 정보를 찾을 수 없습니다.');
+                    return;
+                }
+
                 if (confirm('정말로 추천하시겠습니까?')) {
-                    fetch(this.dataset.uri, { method: 'POST' })
-                        .then(response => response.json())
+                    fetch(likeUri, { method: 'POST' })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}`);
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.success) {
-                                // 추천 숫자 업데이트
-                                this.querySelector('.like-count').textContent = data.like_count;
-                                alert(data.message);
+                                const likeCountEl = this.querySelector('.like-count');
+                                if (likeCountEl) {
+                                    likeCountEl.textContent = data.like_count;
+                                }
+                                alert(data.message || '추천했습니다.');
                             } else {
-                                alert(data.message);
+                                alert(data.message || '추천할 수 없습니다.');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('오류가 발생했습니다');
+                            alert('추천 처리 중 오류가 발생했습니다.');
                         });
                 }
             });
