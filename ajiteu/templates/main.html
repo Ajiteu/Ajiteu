@@ -341,15 +341,16 @@
 
                     <div class="widget-block">
                         <div class="widget-title fw-bold mb-3">이번주의 발견</div>
-                        <ul class="widget-list trend list-unstyled d-flex flex-column gap-2 m-0 p-0">
+                        <ul class="widget-list trend list-unstyled d-flex flex-column gap-2 m-0 p-0"
+                            id="weeklyDiscoveryList">
                             {% if weekly_trends|default([]) %}
                             {% for trend_post in weekly_trends %}
-                            <li class="list-item text-truncate">
-                                <a href="{{ url_for('post.detail', post_id=trend_post.id) }}"
-                                    class="text-decoration-none text-reset"
-                                    onclick="openPostDetailModal({{ trend_post.id }}, event)">
-                                    {{ trend_post.content[:30] }}{% if trend_post.content|length > 30 %}...{% endif %}
-                                </a>
+                            <li class="list-item text-truncate weekly-discovery-item"
+                                data-post-id="{{ trend_post.id }}"
+                                role="button"
+                                tabindex="0"
+                                style="cursor: pointer;">
+                                {{ trend_post.content[:30] }}{% if trend_post.content|length > 30 %}...{% endif %}
                             </li>
                             {% endfor %}
                             {% else %}
@@ -663,7 +664,10 @@
                 return false;
             }
 
-            const response = await fetch(`/post/detail/${numericPostId}/`);
+            const trackView = options.trackView !== false;
+            const response = await fetch(getPostDetailFetchUrl(numericPostId, trackView), {
+                credentials: 'same-origin',
+            });
             if (!response.ok) {
                 showOverlayError(slot, `게시글을 ${getFetchErrorMessage(response)}`);
                 return false;
@@ -700,7 +704,7 @@
             openAjiteuPageOverlay();
 
             try {
-                await loadPostDetailIntoSlot(slot, postId, { scrollToComments });
+                await loadPostDetailIntoSlot(slot, postId, { scrollToComments, trackView: false });
             } catch (error) {
                 showOverlayError(slot, '게시글을 불러오지 못했습니다.');
                 console.error(error);
@@ -926,6 +930,172 @@
             });
         }
 
+        function getPostDetailModal() {
+            return document.getElementById('ajiteuPageOverlay')?.querySelector('#postDetailModal')
+                || document.getElementById('postDetailModal');
+        }
+
+        function getPostIdFromModal(modal) {
+            return modal?.querySelector('#commentForm')?.dataset.postId;
+        }
+
+        async function refreshCommentsArea(postId) {
+            const numericPostId = Number(postId);
+            const modal = getPostDetailModal();
+            if (!modal || !numericPostId || Number.isNaN(numericPostId)) {
+                return false;
+            }
+
+            const response = await fetch(getPostDetailFetchUrl(numericPostId, false), {
+                credentials: 'same-origin',
+            });
+            if (!response.ok) {
+                alert('댓글 목록을 불러오지 못했습니다.');
+                return false;
+            }
+
+            const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const newCommentsSection = doc.querySelector('#comments');
+            const currentCommentsSection = modal.querySelector('#comments');
+            if (newCommentsSection && currentCommentsSection) {
+                currentCommentsSection.innerHTML = newCommentsSection.innerHTML;
+            }
+
+            ['bottomCommentCount', 'bottomLikeCount', 'bottomViewCount', 'mainCommentCount'].forEach((id) => {
+                const src = doc.getElementById(id);
+                const dst = modal.querySelector(`#${id}`);
+                if (src && dst) {
+                    dst.textContent = src.textContent;
+                }
+            });
+
+            return true;
+        }
+
+        async function handleDeleteAndRefresh(deleteUri, postId) {
+            if (!deleteUri || !postId) {
+                alert('삭제 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch(deleteUri, {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                });
+
+                if (response.ok || response.redirected) {
+                    cancelCommentEdit();
+                    await refreshCommentsArea(postId);
+                } else {
+                    alert('삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        function bindPostDetailActionsDelegation(modal) {
+            if (!modal || modal.dataset.actionsDelegationBound === '1') return;
+            modal.dataset.actionsDelegationBound = '1';
+
+            modal.addEventListener('click', async (event) => {
+                const actionEl = event.target.closest('[data-action]');
+                if (!actionEl || !modal.contains(actionEl)) return;
+
+                const action = actionEl.dataset.action;
+                const postId = getPostIdFromModal(modal);
+
+                switch (action) {
+                    case 'edit-comment': {
+                        event.preventDefault();
+                        const commentId = Number(actionEl.dataset.commentId);
+                        const contentRoot = actionEl.closest('[id^="comment-content-"]');
+                        const content = contentRoot?.querySelector('.comment-text')?.textContent ?? '';
+                        editComment(commentId, content);
+                        break;
+                    }
+                    case 'delete-comment':
+                    case 'delete-reply': {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const deleteUri = actionEl.dataset.uri;
+                        if (!deleteUri) {
+                            alert('삭제 주소를 찾을 수 없습니다.');
+                            return;
+                        }
+                        if (!confirm('정말로 삭제하시겠습니까?')) return;
+                        await handleDeleteAndRefresh(deleteUri, postId);
+                        break;
+                    }
+                    case 'toggle-reply': {
+                        event.preventDefault();
+                        const commentId = Number(actionEl.dataset.commentId);
+                        toggleReplyForm(commentId);
+                        break;
+                    }
+                    case 'toggle-reply-edit':
+                    case 'cancel-reply-edit': {
+                        event.preventDefault();
+                        const replyId = Number(actionEl.dataset.replyId);
+                        toggleReplyEditForm(replyId);
+                        break;
+                    }
+                    case 'cancel-comment-edit': {
+                        event.preventDefault();
+                        cancelCommentEdit();
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            });
+        }
+
+        function bindPostDetailFormDelegation(modal) {
+            if (!modal || modal.dataset.formDelegationBound === '1') return;
+            modal.dataset.formDelegationBound = '1';
+
+            modal.addEventListener('submit', async (event) => {
+                const form = event.target;
+                if (!form || form.tagName !== 'FORM') return;
+
+                const isCommentForm = form.id === 'commentForm';
+                const isReplyForm = !!form.closest('#comments') && form.action.includes('/reply/');
+                if (!isCommentForm && !isReplyForm) return;
+
+                event.preventDefault();
+                if (form.dataset.submitting === '1') return;
+                form.dataset.submitting = '1';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        credentials: 'same-origin',
+                    });
+
+                    if (response.ok || response.redirected) {
+                        const postId = getPostIdFromModal(modal);
+                        if (isCommentForm) {
+                            cancelCommentEdit();
+                        }
+                        if (postId) {
+                            await refreshCommentsArea(postId);
+                        }
+                    } else {
+                        alert('요청 처리에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('요청 처리 중 오류가 발생했습니다.');
+                } finally {
+                    delete form.dataset.submitting;
+                }
+            });
+        }
+
         function bindOverlayFormSubmit(form, onSuccess) {
             if (!form || form.dataset.boundSubmit === '1') return;
             form.dataset.boundSubmit = '1';
@@ -958,95 +1128,6 @@
             });
         }
 
-        function bindCommentListActions(modal) {
-            if (!modal) return;
-
-            modal.querySelectorAll('.js-edit-comment').forEach((element) => {
-                if (element.dataset.boundClick === '1') return;
-                element.dataset.boundClick = '1';
-                element.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const commentId = Number(element.dataset.commentId);
-                    const contentRoot = element.closest('[id^="comment-content-"]');
-                    const content = contentRoot?.querySelector('.comment-text')?.textContent ?? '';
-                    editComment(commentId, content);
-                });
-            });
-
-            modal.querySelectorAll('#comments .delete').forEach((element) => {
-                if (element.dataset.boundClick === '1') return;
-                element.dataset.boundClick = '1';
-                element.addEventListener('click', function () {
-                    const deleteUri = this.dataset.uri;
-                    if (!deleteUri) {
-                        alert('삭제 주소를 찾을 수 없습니다.');
-                        return;
-                    }
-                    if (!confirm('정말로 삭제하시겠습니까?')) return;
-
-                    if (isDetailModalInOverlay() && deleteUri.includes('/comment/delete/')) {
-                        handleCommentDeleteInOverlay(deleteUri, modal);
-                    } else {
-                        location.href = deleteUri;
-                    }
-                });
-            });
-        }
-
-        async function reloadCommentsInOverlay(postId) {
-            const numericPostId = Number(postId);
-            const modal = document.getElementById('ajiteuPageOverlay')?.querySelector('#postDetailModal');
-            if (!modal || !numericPostId || Number.isNaN(numericPostId)) return;
-
-            const response = await fetch(`/post/detail/${numericPostId}/`);
-            if (!response.ok) {
-                alert('댓글 목록을 불러오지 못했습니다.');
-                return;
-            }
-
-            const html = await response.text();
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-
-            const newCommentsSection = doc.querySelector('#comments');
-            const currentCommentsSection = modal.querySelector('#comments');
-            if (newCommentsSection && currentCommentsSection) {
-                currentCommentsSection.innerHTML = newCommentsSection.innerHTML;
-            }
-
-            const bottomCount = doc.querySelector('#bottomCommentCount');
-            if (bottomCount) {
-                const bottomEl = modal.querySelector('#bottomCommentCount');
-                if (bottomEl) bottomEl.textContent = bottomCount.textContent;
-            }
-
-            bindCommentListActions(modal);
-        }
-
-        async function handleCommentDeleteInOverlay(deleteUri, modal) {
-            const postId = modal?.querySelector('#commentForm')?.dataset.postId;
-            if (!postId) {
-                alert('게시글 정보를 찾을 수 없습니다.');
-                return;
-            }
-
-            try {
-                const response = await fetch(deleteUri, {
-                    method: 'GET',
-                    credentials: 'same-origin',
-                });
-
-                if (response.ok || response.redirected) {
-                    cancelCommentEdit();
-                    await reloadCommentsInOverlay(postId);
-                } else {
-                    alert('댓글 삭제에 실패했습니다.');
-                }
-            } catch (error) {
-                console.error(error);
-                alert('댓글 삭제 중 오류가 발생했습니다.');
-            }
-        }
-
         function bindPostDetailOverlay(root) {
             if (!root) return;
 
@@ -1054,13 +1135,20 @@
             if (!modal || modal.dataset.detailBound === '1') return;
             modal.dataset.detailBound = '1';
 
-            bindCommentListActions(modal);
+            bindPostDetailActionsDelegation(modal);
+            bindPostDetailFormDelegation(modal);
+
+            const commentForm = root.querySelector('#commentForm');
+            if (commentForm && !commentFormCreateAction) {
+                commentFormCreateAction = commentForm.action;
+            }
 
             root.querySelectorAll('.recommend').forEach((element) => {
                 if (element.dataset.boundClick === '1') return;
                 element.dataset.boundClick = '1';
                 element.addEventListener('click', function (e) {
                     e.preventDefault();
+                    e.stopPropagation();
                     const likeUri = this.dataset.uri;
                     if (!likeUri) {
                         alert('추천 요청 정보를 찾을 수 없습니다.');
@@ -1088,28 +1176,6 @@
                             console.error(error);
                             alert('추천 처리 중 오류가 발생했습니다.');
                         });
-                });
-            });
-
-            const commentForm = root.querySelector('#commentForm');
-            if (commentForm) {
-                if (!commentFormCreateAction) {
-                    commentFormCreateAction = commentForm.action;
-                }
-
-                bindOverlayFormSubmit(commentForm, async () => {
-                    const postId = commentForm.dataset.postId;
-                    cancelCommentEdit();
-                    await reloadPostDetailInOverlay(postId, true);
-                });
-            }
-
-            modal.querySelectorAll('form[action*="/reply/"]').forEach((replyForm) => {
-                bindOverlayFormSubmit(replyForm, async () => {
-                    const postId = commentForm?.dataset.postId;
-                    if (postId) {
-                        await reloadPostDetailInOverlay(postId, true);
-                    }
                 });
             });
 
@@ -1157,7 +1223,47 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', resetModalUiState);
+        function getPostDetailFetchUrl(postId, trackView = true) {
+            const numericPostId = Number(postId);
+            const base = `/post/detail/${numericPostId}/`;
+            return trackView ? base : `${base}?track_view=0`;
+        }
+
+        function bindWeeklyDiscoveryClicks() {
+            const list = document.getElementById('weeklyDiscoveryList');
+            if (!list || list.dataset.bound === '1') return;
+            list.dataset.bound = '1';
+
+            list.addEventListener('click', (event) => {
+                const item = event.target.closest('[data-post-id]');
+                if (!item || !list.contains(item)) return;
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                const postId = Number(item.dataset.postId);
+                if (!postId || Number.isNaN(postId)) return;
+
+                openPostDetailModal(postId, event);
+            });
+
+            list.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                const item = event.target.closest('[data-post-id]');
+                if (!item || !list.contains(item)) return;
+
+                event.preventDefault();
+                const postId = Number(item.dataset.postId);
+                if (!postId || Number.isNaN(postId)) return;
+
+                openPostDetailModal(postId, event);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            resetModalUiState();
+            bindWeeklyDiscoveryClicks();
+        });
         window.addEventListener('pageshow', (event) => {
             if (event.persisted) {
                 resetModalUiState();
@@ -1201,6 +1307,7 @@
     <script type="text/javascript">
         const delete_elements = document.getElementsByClassName('delete');
         Array.from(delete_elements).forEach(function (element) {
+            if (element.closest('#postDetailModal')) return;
             element.addEventListener('click', function () {
                 const deleteUri = this.dataset.uri;
                 if (!deleteUri) {
@@ -1216,6 +1323,7 @@
     <script>
         const recommend_elements = document.getElementsByClassName('recommend');
         Array.from(recommend_elements).forEach(function (element) {
+            if (element.closest('#postDetailModal')) return;
             element.addEventListener('click', function (e) {
                 e.preventDefault();
 

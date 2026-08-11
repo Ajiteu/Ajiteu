@@ -259,12 +259,14 @@
 
 
                                             {% if g.user == comment.user %}
-                                            <a href="javascript:void(0)"
-                                                class="small js-edit-comment"
-                                                data-comment-id="{{ comment.id }}">수정</a>
-                                            <a href="javascript:void(0)"
-                                                data-uri="{{ url_for('comment.delete', comment_id=comment.id) }}"
-                                                class="delete small">삭제</a>
+                                            <button type="button"
+                                                class="btn btn-link btn-sm p-0 small text-reset"
+                                                data-action="edit-comment"
+                                                data-comment-id="{{ comment.id }}">수정</button>
+                                            <button type="button"
+                                                class="btn btn-link btn-sm p-0 small text-reset"
+                                                data-action="delete-comment"
+                                                data-uri="{{ url_for('comment.delete', comment_id=comment.id) }}">삭제</button>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -281,12 +283,14 @@
                                                     <strong class="me-2">{{ reply.user.username }}</strong>
                                                     <span class="me-2" style="white-space: pre-line;">{{ reply.content }}</span>
                                                     {% if g.user == reply.user %}
-                                                    <a href="javascript:void(0)"
-                                                        onclick="toggleReplyEditForm({{ reply.id }})"
-                                                        class="small me-2">수정</a>
-                                                    <a href="javascript:void(0)"
-                                                        data-uri="{{ url_for('reply.delete_reply', reply_id=reply.id) }}"
-                                                        class="delete small">삭제</a>
+                                                    <button type="button"
+                                                        class="btn btn-link btn-sm p-0 small text-reset me-2"
+                                                        data-action="toggle-reply-edit"
+                                                        data-reply-id="{{ reply.id }}">수정</button>
+                                                    <button type="button"
+                                                        class="btn btn-link btn-sm p-0 small text-reset"
+                                                        data-action="delete-reply"
+                                                        data-uri="{{ url_for('reply.delete_reply', reply_id=reply.id) }}">삭제</button>
                                                     {% endif %}
                                                     <small class="ms-auto">
                                                         {% if reply.modify_date %}
@@ -313,7 +317,8 @@
                                                                 수정
                                                             </button>
                                                             <button type="button" class="btn btn-sm btn-secondary"
-                                                                onclick="toggleReplyEditForm({{ reply.id }})"
+                                                                data-action="cancel-reply-edit"
+                                                                data-reply-id="{{ reply.id }}"
                                                                 style="font-size: 12px; padding: 4px 8px; white-space: nowrap;">
                                                                 취소
                                                             </button>
@@ -326,10 +331,12 @@
                                         {% endif %}
                                         <!-- 답글추가 버튼 -->
                                         <div style="margin-top: 8px;">
-                                            <a href="javascript:void(0)" data-uri="{{ comment.id }}"
-                                                onclick="toggleReplyForm({{ comment.id }})" class="small">
+                                            <button type="button"
+                                                class="btn btn-link btn-sm p-0 small text-reset"
+                                                data-action="toggle-reply"
+                                                data-comment-id="{{ comment.id }}">
                                                 <small>답글추가</small>
-                                            </a>
+                                            </button>
                                         </div>
 
                                         <!-- 답글 입력창 (처음엔 숨김) -->
@@ -347,8 +354,8 @@
                                                         등록
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-secondary"
-                                                        data-uri="{{ comment.id }}"
-                                                        onclick="toggleReplyForm({{ comment.id }})"
+                                                        data-action="toggle-reply"
+                                                        data-comment-id="{{ comment.id }}"
                                                         style="font-size: 12px; padding: 4px 8px; white-space: nowrap;">
                                                         취소
                                                     </button>
@@ -418,7 +425,8 @@
                         </button>
                         <!-- 취소버튼 / 수정중일때만 보임 -->
                         <button type="button" class="btn btn-secondary rounded-3 flex-shrink-0 fw-semibold"
-                            id="commentCancelBtn" style="display: none;" onclick="cancelCommentEdit()">취소</button>
+                            id="commentCancelBtn" style="display: none;"
+                            data-action="cancel-comment-edit">취소</button>
 
                     </div>
 
