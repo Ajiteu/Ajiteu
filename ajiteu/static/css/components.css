@@ -12,7 +12,7 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    border: 1.5px solid #111111;
+    border: 1.5px solid #cbd5e1;
     background-color: #f0f0f0;
     margin-bottom: 0.8rem;
     overflow: hidden;
@@ -120,7 +120,7 @@
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    border: 1.5px solid #000000;
+    border: 1.5px solid #cbd5e1;
     background-color: #e0e0e0;
     overflow: hidden;
     flex-shrink: 0;
@@ -136,6 +136,14 @@
     font-size: 0.85rem;
     font-weight: bold;
     line-height: 1.1;
+
+    color: #111111;
+    text-decoration: none;
+}
+
+.author-name:hover {
+    color: #111111;
+    text-decoration: none;
 }
 
 .post-date {
@@ -164,8 +172,8 @@
 .thumb-box {
     width: 60px;
     height: 60px;
-    border: 1.5px solid #111111;
-    border-radius: 10px;
+    /* border: 1.5px solid #111111;
+    border-radius: 10px; */
     background-color: #e8e8e8;
     flex-shrink: 0;
 }
@@ -424,6 +432,12 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: 1px solid #333;
+    border: 1px solid #cbd5e1;
     background-color: #f8f9fa;
+}
+
+
+/* sinae :811 이모티콘 기울임 방지 */
+.icon {
+    font-style: normal;
 }

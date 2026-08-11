@@ -21,7 +21,11 @@ def create(post_id):
         return redirect(url_for('post.detail', post_id=post_id))
         #앵커 있는버전
         #return redirect('{}#comment_{}'.format(url_for('detail', post_id=post_id), comment.id))
-    return render_template('post_detail.html', post=post, form=form)    # sinae : 808 detail.html -> post_detail.html
+
+    #sinae : 811 내용이 없거나 폼 검증 실패
+    flash('댓글 내용을 입력해주세요', 'warning')
+    return redirect(url_for('post.detail', post_id=post_id))
+    # return render_template('post_detail.html', post=post, form=form)    # sinae : 808 detail.html -> post_detail.html
 
 @bp.route('/modify/<int:comment_id>/', methods=('GET', 'POST'))
 @login_required

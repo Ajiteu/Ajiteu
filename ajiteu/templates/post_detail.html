@@ -348,7 +348,7 @@
                                                             <textarea class="form-control" name="content" rows="1"
                                                                 style="font-size: 12px; padding: 6px 8px; min-height: 32px;">{{ reply.content }}</textarea>
                                                             <button type="submit"
-                                                                class="btn btn-outline-dark rounded-3 px-3 flex-shrink-0 btn-sm"
+                                                                class="btn btn-comment-modify rounded-3 px-3 flex-shrink-0 btn-sm"
                                                                 style="font-size: 12px;">
                                                                 수정
                                                             </button>
@@ -379,7 +379,7 @@
                                                 {{ comment_form.csrf_token }}
                                                 <div class="d-flex gap-2">
                                                     <textarea class="form-control" name="content" rows="1"
-                                                        placeholder="답글을 입력해주세요"
+                                                        placeholder="답글을 입력해주세요" required
                                                         style="font-size: 12px; padding: 6px 8px; min-height: 32px;"></textarea>
                                                     <button type="submit"
                                                         class="btn btn-outline-dark rounded-3 px-3 flex-shrink-0 btn-sm"
@@ -444,7 +444,7 @@
                     <div class="d-flex gap-2">
                         <!-- 댓글 입력창 -->
                         <textarea class="form-control" name="content" id="commentContent" rows="1"
-                            placeholder="댓글을 입력해주세요"></textarea>
+                            placeholder="댓글을 입력해주세요" required></textarea>
                         <!-- <input type="text" class="form-control rounded-pill px-3 border-dark" id="commentInput"
                             placeholder="댓글을 입력해주세요." autocomplete="off"> -->
                         <!-- 등록 -->
@@ -539,7 +539,7 @@
 
         // 버튼 텍스트 변경
         document.getElementById('commentSubmitBtn').textContent = '수정하기';
-        document.getElementById('commentSubmitBtn').classList.add('btn-warning');
+        document.getElementById('commentSubmitBtn').classList.add('btn-comment-modify');
         document.getElementById('commentSubmitBtn').classList.remove('btn-outline-dark');
 
         // 취소 버튼 보이기
@@ -562,7 +562,7 @@
 
         // 버튼 텍스트 원래대로
         document.getElementById('commentSubmitBtn').textContent = '등록하기';
-        document.getElementById('commentSubmitBtn').classList.remove('btn-warning');
+        document.getElementById('commentSubmitBtn').classList.remove('btn-comment-modify');
         document.getElementById('commentSubmitBtn').classList.add('btn-outline-dark');
 
         // 취소 버튼 숨기기

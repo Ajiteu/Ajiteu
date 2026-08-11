@@ -1,4 +1,4 @@
-< !--=========================================게시글 상세 모달 크기=========================================-->
+<!-- =========================================게시글 상세 모달 크기=========================================-->
 /* =====================================
        프로필 사진
     ====================================== */
@@ -188,4 +188,34 @@
 
     }
 
+
+    
+}
+
+/* sinae : 811 추가 */
+/* =====================================
+댓글 / 답글 링크 스타일
+====================================== */
+
+#postDetailModal .comments-section a {
+    color: #111111;
+    text-decoration: none;
+}
+
+#postDetailModal .comments-section a:hover {
+    color: #111111;
+    text-decoration: none;
+}
+
+/* 버튼색 변경 */
+.btn-comment-modify {
+    background-color: #9381D6;
+    border-color: #9381D6;
+    color: #ffffff;
+}
+
+.btn-comment-modify:hover {
+    background-color: #7f6bc7;
+    border-color: #7f6bc7;
+    color: #ffffff;
 }

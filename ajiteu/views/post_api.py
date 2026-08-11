@@ -234,6 +234,11 @@ def index():
 
 @bp.route('/user/<int:user_id>', methods=['GET'])
 def user_posts(user_id):
+    # sinae : 811 수정
+    user = User.query.get_or_404(user_id)
     page = request.args.get('page', 1, type=int)
-    post_list = Post.query.filter_by(user_id=user_id).paginate(page=page, per_page=10)
-    return render_template('main.html', post_list=post_list)
+    post_list = Post.query.filter_by(user_id=user_id).order_by(Post.create_date.desc()).paginate(page=page, per_page=10)
+
+    weekly_trends = get_weekly_trends(limit=4)
+
+    return render_template('main.html', post_list=post_list, user=user, page=page, kw='', so='recent', current_category='all', weekly_trends=weekly_trends)
