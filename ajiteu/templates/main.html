@@ -58,7 +58,8 @@
                     <div class="user-name fw-bold" id="userName">{{ g.user.nickname }}</div>
                 </a>
                 <!-- 프로필 소개 링크 -->
-                <a href="{{ url_for('profile.detail', username_id=g.user.id) }}" class="text-decoration-none text-reset">
+                <a href="{{ url_for('profile.detail', username_id=g.user.id) }}" class="text-decoration-none text-reset"
+                    onclick="openProfileModal(event)">
                     <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
                     <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro or '소개글을 작성해 보세요.' }}</div>
                 </a>
@@ -383,6 +384,17 @@
         let editingCommentId = null;
         let overlayLoading = false;
 
+        function extractPostIdFromUri(uri) {
+            const match = uri && uri.match(/\/post\/detail\/(\d+)\/?/);
+            return match ? Number(match[1]) : null;
+        }
+
+        function isDetailModalInOverlay() {
+            const overlay = document.getElementById('ajiteuPageOverlay');
+            return !!(overlay && !overlay.classList.contains('hidden') &&
+                overlay.querySelector('#postDetailModal'));
+        }
+
         function showOverlayError(slot, message) {
             if (!slot) return;
             slot.innerHTML = `
@@ -391,6 +403,31 @@
                     <button type="button" class="btn btn-light btn-sm js-overlay-error-close">닫기</button>
                 </div>`;
             slot.querySelector('.js-overlay-error-close')?.addEventListener('click', closeAjiteuPageOverlay);
+        }
+
+        function resetModalUiState() {
+            const actionOverlay = document.getElementById('ajiteuActionOverlay');
+            if (actionOverlay) {
+                actionOverlay.classList.add('hidden');
+                actionOverlay.setAttribute('aria-hidden', 'true');
+            }
+
+            const pageOverlay = document.getElementById('ajiteuPageOverlay');
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (pageOverlay) {
+                pageOverlay.classList.add('hidden');
+                pageOverlay.setAttribute('aria-hidden', 'true');
+            }
+            if (slot) {
+                slot.innerHTML = '';
+            }
+
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+
+            overlayLoading = false;
         }
 
         function getFetchErrorMessage(response) {
@@ -428,13 +465,26 @@
 
             if (isOwner && modifyUri) {
                 const editItem = document.createElement('li');
-                editItem.innerHTML = `<a href="${modifyUri}" class="ajiteu-action-item">수정</a>`;
+                editItem.innerHTML = '<button type="button" class="ajiteu-action-item" data-action="edit">수정</button>';
+                editItem.querySelector('button').addEventListener('click', () => {
+                    closeAjiteuActionSheet();
+                    openWriteModalFromUri(modifyUri);
+                });
                 list.appendChild(editItem);
             }
 
             if (viewUri) {
                 const viewItem = document.createElement('li');
-                viewItem.innerHTML = `<a href="${viewUri}" class="ajiteu-action-item">게시물로 이동</a>`;
+                viewItem.innerHTML = '<button type="button" class="ajiteu-action-item" data-action="view">게시물로 이동</button>';
+                viewItem.querySelector('button').addEventListener('click', () => {
+                    closeAjiteuActionSheet();
+                    const postId = extractPostIdFromUri(viewUri);
+                    if (postId) {
+                        openPostDetailModal(postId);
+                    } else {
+                        window.location.href = viewUri;
+                    }
+                });
                 list.appendChild(viewItem);
             }
 
@@ -457,7 +507,17 @@
             if (!overlay) return;
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
+
+            const pageOverlay = document.getElementById('ajiteuPageOverlay');
+            if (pageOverlay && !pageOverlay.classList.contains('hidden')) {
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
         }
 
         document.getElementById('ajiteuActionOverlay')?.addEventListener('click', (event) => {
@@ -467,10 +527,15 @@
         });
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
+            if (event.key !== 'Escape') return;
+
+            const actionOverlay = document.getElementById('ajiteuActionOverlay');
+            if (actionOverlay && !actionOverlay.classList.contains('hidden')) {
                 closeAjiteuActionSheet();
-                closeAjiteuPageOverlay();
+                return;
             }
+
+            closeAjiteuPageOverlay();
         });
 
         document.addEventListener('click', (event) => {
@@ -504,7 +569,8 @@
         }
 
         function editComment(commentId, content) {
-            if (!commentId) return;
+            const numericCommentId = Number(commentId);
+            if (Number.isNaN(numericCommentId) || numericCommentId <= 0) return;
 
             const form = document.getElementById('commentForm');
             const contentEl = document.getElementById('commentContent');
@@ -512,14 +578,14 @@
             const cancelBtn = document.getElementById('commentCancelBtn');
             if (!form || !contentEl || !submitBtn || !cancelBtn) return;
 
-            editingCommentId = commentId;
+            editingCommentId = numericCommentId;
             if (!commentFormCreateAction) {
                 commentFormCreateAction = form.action;
             }
             contentEl.value = content ?? '';
-            form.action = `/comment/modify/${commentId}/`;
+            form.action = `/comment/modify/${numericCommentId}/`;
             submitBtn.textContent = '수정하기';
-            submitBtn.classList.add('btn-warning');
+            submitBtn.classList.add('btn-warning', 'btn-comment-modify');
             submitBtn.classList.remove('btn-outline-dark');
             cancelBtn.style.display = 'block';
             contentEl.focus();
@@ -535,12 +601,12 @@
             if (!form || !contentEl || !submitBtn || !cancelBtn) return;
 
             contentEl.value = '';
-            contentEl.placeholder = '댓글을 입력해주세요';
+            contentEl.placeholder = '여기, 이야기를 더해보세요';
             if (commentFormCreateAction) {
                 form.action = commentFormCreateAction;
             }
             submitBtn.textContent = '등록하기';
-            submitBtn.classList.remove('btn-warning');
+            submitBtn.classList.remove('btn-warning', 'btn-comment-modify');
             submitBtn.classList.add('btn-outline-dark');
             cancelBtn.style.display = 'none';
         }
@@ -560,15 +626,86 @@
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
             if (slot) slot.innerHTML = '';
-            document.body.style.overflow = '';
+
+            const actionOverlay = document.getElementById('ajiteuActionOverlay');
+            const actionOpen = actionOverlay && !actionOverlay.classList.contains('hidden');
+            if (!actionOpen) {
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+            } else {
+                document.body.style.overflow = 'hidden';
+            }
+
             overlayLoading = false;
         }
 
         document.getElementById('ajiteuPageOverlay')?.addEventListener('click', (event) => {
-            if (event.target.id === 'ajiteuPageOverlay') {
+            const overlay = document.getElementById('ajiteuPageOverlay');
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!overlay || overlay.classList.contains('hidden')) return;
+
+            const modalRoot = event.target.closest('#postDetailModal, #profileModal, #postModal');
+            if (modalRoot && event.target === modalRoot) {
+                closeAjiteuPageOverlay();
+                return;
+            }
+
+            if (event.target === overlay || event.target === slot) {
                 closeAjiteuPageOverlay();
             }
         });
+
+        async function loadPostDetailIntoSlot(slot, postId, options = {}) {
+            const numericPostId = Number(postId);
+            if (!slot || !numericPostId || Number.isNaN(numericPostId) || numericPostId <= 0) {
+                return false;
+            }
+
+            const response = await fetch(`/post/detail/${numericPostId}/`);
+            if (!response.ok) {
+                showOverlayError(slot, `게시글을 ${getFetchErrorMessage(response)}`);
+                return false;
+            }
+
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const modal = doc.querySelector('#postDetailModal');
+            if (!modal) {
+                showOverlayError(slot, '게시글 화면을 구성하지 못했습니다.');
+                return false;
+            }
+
+            modal.classList.remove('fade');
+            modal.style.display = 'block';
+            modal.style.background = 'transparent';
+            slot.innerHTML = '';
+            slot.appendChild(modal);
+            bindPostDetailOverlay(slot);
+
+            if (options.scrollToComments) {
+                setTimeout(() => slot.querySelector('#comments')?.scrollIntoView({ behavior: 'smooth' }), 100);
+            }
+
+            return true;
+        }
+
+        async function reloadPostDetailInOverlay(postId, scrollToComments = true) {
+            const slot = document.getElementById('ajiteuPageOverlaySlot');
+            if (!slot) return;
+
+            commentFormCreateAction = null;
+            editingCommentId = null;
+            openAjiteuPageOverlay();
+
+            try {
+                await loadPostDetailIntoSlot(slot, postId, { scrollToComments });
+            } catch (error) {
+                showOverlayError(slot, '게시글을 불러오지 못했습니다.');
+                console.error(error);
+            }
+        }
 
         async function openPostDetailModal(postId, event) {
             if (event) {
@@ -593,30 +730,10 @@
             openAjiteuPageOverlay();
 
             try {
-                const response = await fetch(`/post/detail/${numericPostId}/`);
-                if (!response.ok) {
-                    showOverlayError(slot, `게시글을 ${getFetchErrorMessage(response)}`);
-                    return;
-                }
-
-                const html = await response.text();
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                const modal = doc.querySelector('#postDetailModal');
-                if (!modal) {
-                    showOverlayError(slot, '게시글 화면을 구성하지 못했습니다.');
-                    return;
-                }
-
-                modal.classList.remove('fade');
-                modal.style.display = 'block';
-                modal.style.background = 'transparent';
-                slot.innerHTML = '';
-                slot.appendChild(modal);
-                bindPostDetailOverlay(slot);
-
-                if (event?.currentTarget?.hash === '#comments') {
-                    setTimeout(() => slot.querySelector('#comments')?.scrollIntoView({ behavior: 'smooth' }), 100);
-                }
+                const loaded = await loadPostDetailIntoSlot(slot, numericPostId, {
+                    scrollToComments: event?.currentTarget?.hash === '#comments',
+                });
+                if (!loaded) return;
             } catch (error) {
                 showOverlayError(slot, '게시글을 불러오지 못했습니다.');
                 console.error(error);
@@ -675,13 +792,7 @@
             }
         }
 
-        async function openWriteModal(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            const url = event?.currentTarget?.href;
+        async function loadWriteModalIntoOverlay(url) {
             if (!url) {
                 alert('글쓰기 주소를 찾을 수 없습니다.');
                 return;
@@ -723,8 +834,24 @@
             }
         }
 
+        async function openWriteModal(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            await loadWriteModalIntoOverlay(event?.currentTarget?.href);
+        }
+
+        async function openWriteModalFromUri(url) {
+            await loadWriteModalIntoOverlay(url);
+        }
+
         function bindWriteOverlay(root) {
             if (!root) return;
+
+            const modal = root.querySelector('#postModal');
+            if (!modal || modal.dataset.writeBound === '1') return;
+            modal.dataset.writeBound = '1';
 
             const imageInput = root.querySelector('#imageUploadInput');
             const previewContainer = root.querySelector('#imagePreview');
@@ -799,10 +926,48 @@
             });
         }
 
+        function bindOverlayFormSubmit(form, onSuccess) {
+            if (!form || form.dataset.boundSubmit === '1') return;
+            form.dataset.boundSubmit = '1';
+
+            form.addEventListener('submit', async (event) => {
+                if (!isDetailModalInOverlay()) return;
+
+                event.preventDefault();
+                if (form.dataset.submitting === '1') return;
+                form.dataset.submitting = '1';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        credentials: 'same-origin',
+                    });
+
+                    if (response.ok || response.redirected) {
+                        await onSuccess();
+                    } else {
+                        alert('요청 처리에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('요청 처리 중 오류가 발생했습니다.');
+                } finally {
+                    delete form.dataset.submitting;
+                }
+            });
+        }
+
         function bindPostDetailOverlay(root) {
             if (!root) return;
 
+            const modal = root.querySelector('#postDetailModal');
+            if (!modal || modal.dataset.detailBound === '1') return;
+            modal.dataset.detailBound = '1';
+
             root.querySelectorAll('.delete').forEach((element) => {
+                if (element.dataset.boundClick === '1') return;
+                element.dataset.boundClick = '1';
                 element.addEventListener('click', function () {
                     const deleteUri = this.dataset.uri;
                     if (!deleteUri) {
@@ -816,6 +981,8 @@
             });
 
             root.querySelectorAll('.recommend').forEach((element) => {
+                if (element.dataset.boundClick === '1') return;
+                element.dataset.boundClick = '1';
                 element.addEventListener('click', function (e) {
                     e.preventDefault();
                     const likeUri = this.dataset.uri;
@@ -848,6 +1015,40 @@
                 });
             });
 
+            root.querySelectorAll('.js-edit-comment').forEach((element) => {
+                if (element.dataset.boundClick === '1') return;
+                element.dataset.boundClick = '1';
+                element.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const commentId = Number(element.dataset.commentId);
+                    const contentRoot = element.closest('[id^="comment-content-"]');
+                    const content = contentRoot?.querySelector('.comment-text')?.textContent ?? '';
+                    editComment(commentId, content);
+                });
+            });
+
+            const commentForm = root.querySelector('#commentForm');
+            if (commentForm) {
+                if (!commentFormCreateAction) {
+                    commentFormCreateAction = commentForm.action;
+                }
+
+                bindOverlayFormSubmit(commentForm, async () => {
+                    const postId = commentForm.dataset.postId;
+                    cancelCommentEdit();
+                    await reloadPostDetailInOverlay(postId, true);
+                });
+            }
+
+            modal.querySelectorAll('form[action*="/reply/"]').forEach((replyForm) => {
+                bindOverlayFormSubmit(replyForm, async () => {
+                    const postId = commentForm?.dataset.postId;
+                    if (postId) {
+                        await reloadPostDetailInOverlay(postId, true);
+                    }
+                });
+            });
+
             const carouselEl = root.querySelector('#postImageCarousel');
             if (carouselEl) {
                 bindPostDetailCarousel(root);
@@ -856,6 +1057,10 @@
 
         function bindProfileOverlay(root) {
             if (!root) return;
+
+            const modal = root.querySelector('#profileModal');
+            if (!modal || modal.dataset.profileBound === '1') return;
+            modal.dataset.profileBound = '1';
 
             const photoInput = root.querySelector('#image');
             const profileImg = root.querySelector('#profileImg');
@@ -887,6 +1092,13 @@
                 reader.readAsDataURL(file);
             });
         }
+
+        document.addEventListener('DOMContentLoaded', resetModalUiState);
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                resetModalUiState();
+            }
+        });
     </script>
 
     <!-- <script>
