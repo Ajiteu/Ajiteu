@@ -958,14 +958,22 @@
             });
         }
 
-        function bindPostDetailOverlay(root) {
-            if (!root) return;
+        function bindCommentListActions(modal) {
+            if (!modal) return;
 
-            const modal = root.querySelector('#postDetailModal');
-            if (!modal || modal.dataset.detailBound === '1') return;
-            modal.dataset.detailBound = '1';
+            modal.querySelectorAll('.js-edit-comment').forEach((element) => {
+                if (element.dataset.boundClick === '1') return;
+                element.dataset.boundClick = '1';
+                element.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const commentId = Number(element.dataset.commentId);
+                    const contentRoot = element.closest('[id^="comment-content-"]');
+                    const content = contentRoot?.querySelector('.comment-text')?.textContent ?? '';
+                    editComment(commentId, content);
+                });
+            });
 
-            root.querySelectorAll('.delete').forEach((element) => {
+            modal.querySelectorAll('#comments .delete').forEach((element) => {
                 if (element.dataset.boundClick === '1') return;
                 element.dataset.boundClick = '1';
                 element.addEventListener('click', function () {
@@ -974,11 +982,79 @@
                         alert('삭제 주소를 찾을 수 없습니다.');
                         return;
                     }
-                    if (confirm('정말로 삭제하시겠습니까?')) {
+                    if (!confirm('정말로 삭제하시겠습니까?')) return;
+
+                    if (isDetailModalInOverlay() && deleteUri.includes('/comment/delete/')) {
+                        handleCommentDeleteInOverlay(deleteUri, modal);
+                    } else {
                         location.href = deleteUri;
                     }
                 });
             });
+        }
+
+        async function reloadCommentsInOverlay(postId) {
+            const numericPostId = Number(postId);
+            const modal = document.getElementById('ajiteuPageOverlay')?.querySelector('#postDetailModal');
+            if (!modal || !numericPostId || Number.isNaN(numericPostId)) return;
+
+            const response = await fetch(`/post/detail/${numericPostId}/`);
+            if (!response.ok) {
+                alert('댓글 목록을 불러오지 못했습니다.');
+                return;
+            }
+
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            const newCommentsSection = doc.querySelector('#comments');
+            const currentCommentsSection = modal.querySelector('#comments');
+            if (newCommentsSection && currentCommentsSection) {
+                currentCommentsSection.innerHTML = newCommentsSection.innerHTML;
+            }
+
+            const bottomCount = doc.querySelector('#bottomCommentCount');
+            if (bottomCount) {
+                const bottomEl = modal.querySelector('#bottomCommentCount');
+                if (bottomEl) bottomEl.textContent = bottomCount.textContent;
+            }
+
+            bindCommentListActions(modal);
+        }
+
+        async function handleCommentDeleteInOverlay(deleteUri, modal) {
+            const postId = modal?.querySelector('#commentForm')?.dataset.postId;
+            if (!postId) {
+                alert('게시글 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch(deleteUri, {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                });
+
+                if (response.ok || response.redirected) {
+                    cancelCommentEdit();
+                    await reloadCommentsInOverlay(postId);
+                } else {
+                    alert('댓글 삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('댓글 삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        function bindPostDetailOverlay(root) {
+            if (!root) return;
+
+            const modal = root.querySelector('#postDetailModal');
+            if (!modal || modal.dataset.detailBound === '1') return;
+            modal.dataset.detailBound = '1';
+
+            bindCommentListActions(modal);
 
             root.querySelectorAll('.recommend').forEach((element) => {
                 if (element.dataset.boundClick === '1') return;
@@ -1012,18 +1088,6 @@
                             console.error(error);
                             alert('추천 처리 중 오류가 발생했습니다.');
                         });
-                });
-            });
-
-            root.querySelectorAll('.js-edit-comment').forEach((element) => {
-                if (element.dataset.boundClick === '1') return;
-                element.dataset.boundClick = '1';
-                element.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const commentId = Number(element.dataset.commentId);
-                    const contentRoot = element.closest('[id^="comment-content-"]');
-                    const content = contentRoot?.querySelector('.comment-text')?.textContent ?? '';
-                    editComment(commentId, content);
                 });
             });
 
