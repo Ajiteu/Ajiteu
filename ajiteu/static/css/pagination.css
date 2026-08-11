@@ -1,34 +1,81 @@
+/* ========================================================
+   페이지네이션 (메인 · 내가 쓴 글 공통)
+   ======================================================== */
 .pagination-bar {
-    background-color: #f8f9fa;  /* 이미지처럼 회색 바탕 */
-    padding: 10px 0;
-    /* border-top: 1px solid #bbb;
-    border-bottom: 1px solid #bbb; */
+    width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 0.25rem;
+    margin-top: 1rem;
+    box-sizing: border-box;
+}
+
+.pagination-bar .pagination-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination-bar .page-item {
+    list-style: none;
+    flex-shrink: 0;
 }
 
 .pagination-bar .page-link {
-    color: #333;
-    text-decoration: none;      /* 밑줄 제거 */
-    font-size: 14px;
-    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.45rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1;
+    color: #262626;
+    text-decoration: none !important;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
 }
 
-.pagination-bar .page-link:hover {
-    text-decoration: none;
+.pagination-bar a.page-link:hover {
+    background-color: #f0f0f0;
     color: #000;
+    text-decoration: none !important;
 }
 
 .pagination-bar .page-link.active {
-    font-weight: bold;
+    font-weight: 700;
     color: #000;
+    background-color: #efefef;
+    pointer-events: none;
 }
 
 .pagination-bar .page-link.disabled {
-    color: #999;
+    color: #c7c7c7;
     pointer-events: none;
     cursor: default;
 }
 
 .pagination-bar .page-link.ellipsis {
-    color: #666;
+    color: #8e8e8e;
     pointer-events: none;
+    min-width: auto;
+    padding: 0 0.2rem;
+    cursor: default;
+}
+
+.pagination-bar .page-link.page-arrow {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #8e8e8e;
 }
