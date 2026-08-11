@@ -77,7 +77,8 @@
           </section>
 
           <footer class="d-flex justify-content-end gap-2 flex-wrap">
-            <button type="button" class="btn btn-outline-dark js-close-page-overlay">취소</button>
+            <button type="button" class="btn btn-outline-dark js-close-page-overlay"
+                    data-fallback="{{ url_for('post._list', username_id=user.id) }}">취소</button>
             <button type="submit" class="btn btn-dark">저장하기</button>
           </footer>
 
