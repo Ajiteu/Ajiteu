@@ -18,6 +18,14 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
+    #  sinae 812 게시물 한번 생성
+    @app.cli.command()
+    def init_posts():
+        """샘플 게시글 생성"""
+        from ajiteu.data.sample_posts import init_sample_posts
+        init_sample_posts()
+
+
     # # 808 Flask-Login 초기화 (이 부분 추가)
     # login_manager.init_app(app)
     # login_manager.login_view = 'auth.login'
