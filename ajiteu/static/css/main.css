@@ -328,8 +328,8 @@ body {
 }
 
 .list-item.active {
-    background-color: #eff6ff;
-    color: #2563eb;
+    background-color: #cac3e7;
+    color: #ffffff !important;
     font-weight: 600;
 }
 
