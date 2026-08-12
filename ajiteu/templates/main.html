@@ -61,7 +61,8 @@
                 <a href="{{ url_for('profile.detail', username_id=g.user.id) }}" class="text-decoration-none text-reset"
                     onclick="openProfileModal(event)">
                     <!-- <div class="user-bio text-secondary small" id="userBio">프로필 소개</div> -->
-                    <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro or '소개글을 작성해 보세요.' }}</div>
+                    <div class="user-bio text-secondary small" id="userBio">{{ g.user.user_intro or '소개글을 작성해 보세요.' }}
+                    </div>
                 </a>
                 {% endif %}
             </div>
@@ -173,8 +174,7 @@
                                         data-post-id="{{ post.id }}"
                                         data-delete-uri="{{ url_for('post.delete', post_id=post.id) }}"
                                         data-modify-uri="{{ url_for('post.modify', post_id=post.id) }}"
-                                        data-is-owner="1"
-                                        aria-label="게시물 메뉴">⋯</button>
+                                        data-is-owner="1" aria-label="게시물 메뉴">⋯</button>
                                     {% endif %}
 
                                 </div>
@@ -202,19 +202,17 @@
                                     <!-- 좋아요 버튼 (클릭 전파 방지) -->
                                     <button type="button"
                                         class="action-item d-inline-flex align-items-center gap-1 text-reset border-0 bg-transparent p-0"
-                                        data-action="like-post"
-                                        data-post-id="{{ post.id }}"
-                                        data-uri="{{ url_for('post.like', post_id=post.id) }}"
-                                        style="cursor: pointer;">
+                                        data-action="like-post" data-post-id="{{ post.id }}"
+                                        data-uri="{{ url_for('post.like', post_id=post.id) }}" style="cursor: pointer;">
                                         <i class="icon">♥️</i><span class="like-count">{{ post.liker | length }}</span>
                                     </button>
 
                                     <button type="button"
                                         class="action-item d-inline-flex align-items-center gap-1 text-reset border-0 bg-transparent p-0"
-                                        data-action="open-comments"
-                                        data-post-id="{{ post.id }}"
+                                        data-action="open-comments" data-post-id="{{ post.id }}"
                                         style="cursor: pointer; color: inherit;">
-                                        <i class="icon">🗨️</i><span class="comment-count">{{ post.comment_set | length }}</span>
+                                        <i class="icon">🗨️</i><span class="comment-count">{{ post.comment_set | length
+                                            }}</span>
                                     </button>
 
                                     <!-- 조회수 (읽기 전용) -->
@@ -263,7 +261,8 @@
                             <li class="page-item">
                                 {% if page_num != post_list.page %}
                                 <a class="page-link"
-                                    href="{{ url_for('post._list', username_id=user.id, page=page_num, category=current_category|default('all'), kw=kw|default('')) }}">{{ page_num }}</a>
+                                    href="{{ url_for('post._list', username_id=user.id, page=page_num, category=current_category|default('all'), kw=kw|default('')) }}">{{
+                                    page_num }}</a>
                                 {% else %}
                                 <span class="page-link active" aria-current="page">{{ page_num }}</span>
                                 {% endif %}
@@ -347,11 +346,8 @@
                             id="weeklyDiscoveryList">
                             {% if weekly_trends|default([]) %}
                             {% for trend_post in weekly_trends %}
-                            <li class="list-item text-truncate weekly-discovery-item"
-                                data-post-id="{{ trend_post.id }}"
-                                role="button"
-                                tabindex="0"
-                                style="cursor: pointer;">
+                            <li class="list-item text-truncate weekly-discovery-item" data-post-id="{{ trend_post.id }}"
+                                role="button" tabindex="0" style="cursor: pointer;">
                                 {{ trend_post.content[:30] }}{% if trend_post.content|length > 30 %}...{% endif %}
                             </li>
                             {% endfor %}
@@ -395,6 +391,9 @@
                 /\/post\/detail\/(\d+)\/?/,
                 /\/post\/modify\/(\d+)\/?/,
                 /\/post\/delete\/(\d+)\/?/,
+
+                // 추가 812
+                /\/post\/like\/(\d+)\/?/,
             ];
             for (const pattern of patterns) {
                 const match = uri.match(pattern);
@@ -919,6 +918,7 @@
                         const modalLike = modal.querySelector('#bottomLikeCount');
                         if (modalLike) modalLike.textContent = data.like_count;
                     }
+
                     alert(data.message || '추천했습니다.');
                 } else {
                     alert(data.message || '추천할 수 없습니다.');
@@ -1478,6 +1478,16 @@
                             if (data.success) {
                                 const likeEl = root.querySelector('#bottomLikeCount');
                                 if (likeEl) likeEl.textContent = data.like_count;
+
+                                // 추가
+                                const postId = extractPostIdFromUri(likeUri);
+                                if (postId) {
+                                    const card = findPostCard(postId);
+                                    const cardLikeEl = card?.querySelector('.like-count');
+                                    if (cardLikeEl) cardLikeEl.textContent = data.like_count;
+                                }
+
+
                                 alert(data.message || '추천했습니다.');
                             } else {
                                 alert(data.message || '추천할 수 없습니다.');

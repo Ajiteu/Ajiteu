@@ -36,7 +36,8 @@ class Post(db.Model):
     user = db.relationship('User', backref=db.backref('post_set'))
 
     #sinae : 808 post가 지워지면 아래 comment들도 지워지게 설정
-    comment_set = db.relationship('Comment', cascade='all, delete-orphan')
+    # comment_set = db.relationship('Comment', cascade='all, delete-orphan')
+    comment_set = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
 
     #추천인(like)
     liker = db.relationship(
@@ -52,7 +53,7 @@ class Comment(db.Model):
     
     # sinae : 808 Post(db.Model)에서 comment_set으로 post가 지워지면 comment도 지워지게.(위에서 relationship하면 여기서 backref 지워줘야한다고 함)
     # post = db.relationship('Post', backref=db.backref('comment_set'))
-    post = db.relationship('Post')
+    post = db.relationship('Post', back_populates='comment_set')
 
     content = db.Column(db.Text(), nullable=False)
     create_date = db.Column(db.DateTime(), nullable=False)
