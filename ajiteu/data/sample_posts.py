@@ -22,7 +22,7 @@ sample_posts_data = [
         "content": "서울에서 부산으로 떠난 주말 여행! 해운대 해수욕장에서 일몰을 봤는데 정말 멋있었다. 해동용궁사도 방문했어. #여행 #부산 #휴가",
         "create_date": datetime.now() - timedelta(days=15),
         "modify_date": datetime.now() - timedelta(days=14),
-        "image_path": ["sample_images/001.JPG", "sample_images/002.JPG"],
+        "image_path": ["sample_images/001.jpg", "sample_images/002.jpg"],
         "view_count": 245,
         "user_id": 1
     },
@@ -38,7 +38,7 @@ sample_posts_data = [
         "content": "태국 방콕 자유여행 완성! 왕궁도 보고 야시장에서 길거리 음식도 먹고. 관광지보다 골목골목이 재미있더라 🌏",
         "create_date": datetime.now() - timedelta(days=25),
         "modify_date": datetime.now() - timedelta(days=23),
-        "image_path": ["sample_images/004.JPG"],
+        "image_path": ["sample_images/004.jpg"],
         "view_count": 389,
         "user_id": 3
     },
@@ -54,7 +54,7 @@ sample_posts_data = [
         "content": "뉴욕 출장에서 짬내서 타임스퀘어도 보고, 센트럴파크도 산책했다. 해외 출장도 여행이 될 수 있다는 걸 알았어 ✈️",
         "create_date": datetime.now() - timedelta(days=35),
         "modify_date": datetime.now() - timedelta(days=34),
-        "image_path": ["sample_images/005.JPG", "sample_images/006.JPG"],
+        "image_path": ["sample_images/005.jpg", "sample_images/006.jpg"],
         "view_count": 421,
         "user_id": 5
     },
@@ -62,7 +62,7 @@ sample_posts_data = [
         "content": "북유럽 관광 일정 짜기! 스웨덴 스톡홀름에서 시작해서 노르웨이까지. 백야의 신비로움을 경험하고 싶다",
         "create_date": datetime.now() - timedelta(days=10),
         "modify_date": datetime.now() - timedelta(days=9),
-        "image_path": ["sample_images/007.JPG"],
+        "image_path": ["sample_images/007.jpg"],
         "view_count": 156,
         "user_id": 6
     },
@@ -78,7 +78,7 @@ sample_posts_data = [
         "content": "홍콩 trip에서 스타페리 탔어! 빅토리아 하버의 야경은 정말 비현실적이다. 다시 한 번 가고 싶은 곳 🌃",
         "create_date": datetime.now() - timedelta(days=5),
         "modify_date": datetime.now() - timedelta(days=4),
-        "image_path": ["sample_images/008.JPG"],
+        "image_path": ["sample_images/008.jpg"],
         "view_count": 567,
         "user_id": 8
     },
@@ -88,7 +88,7 @@ sample_posts_data = [
         "content": "새벽 러닝 30일 챌린지 완성! 5km를 매일 뛰었는데 체력이 눈에 띄게 좋아졌다. 다음은 10km 도전! 💪",
         "create_date": datetime.now() - timedelta(days=12),
         "modify_date": datetime.now() - timedelta(days=11),
-        "image_path": ["sample_images/009.JPG", "sample_images/010.JPG"],
+        "image_path": ["sample_images/009.jpg", "sample_images/010.jpg"],
         "view_count": 398,
         "user_id": 2
     },
@@ -104,7 +104,7 @@ sample_posts_data = [
         "content": "요가로 시작한 아침운동! 요가는 생각보다 훨씬 힘들지만 정신이 맑아지는 기분이 좋다. 계속 해봐야겠어",
         "create_date": datetime.now() - timedelta(days=22),
         "modify_date": datetime.now() - timedelta(days=21),
-        "image_path": ["sample_images/011.JPG"],
+        "image_path": ["sample_images/011.jpg"],
         "view_count": 267,
         "user_id": 3
     },
@@ -120,7 +120,7 @@ sample_posts_data = [
         "content": "운동하는 습관이 생겼어! 예전엔 헬스장 가기도 힘들었는데 이제는 안 가면 불안하다 ㅋㅋ 운동 중독인 듯",
         "create_date": datetime.now() - timedelta(days=3),
         "modify_date": datetime.now() - timedelta(days=2),
-        "image_path": ["sample_images/012.JPG"],
+        "image_path": ["sample_images/012.jpg"],
         "view_count": 312,
         "user_id": 5
     },
@@ -136,7 +136,7 @@ sample_posts_data = [
         "content": "요가 명상으로 스트레스 해소! 근력 운동도 좋지만 요가의 여유로움도 정말 좋다. 일주일에 2-3번은 꼭 하자",
         "create_date": datetime.now() - timedelta(days=14),
         "modify_date": datetime.now() - timedelta(days=13),
-        "image_path": ["sample_images/013.JPG"],
+        "image_path": ["sample_images/013.jpg"],
         "view_count": 213,
         "user_id": 7
     },
@@ -144,7 +144,7 @@ sample_posts_data = [
         "content": "헬스 처음 가본 사람들 필수 루틴! 벤치프레스, 스쿼트, 데드리프트는 기본이지. 재미있고 힘들고 뿌듯해! 💪",
         "create_date": datetime.now() - timedelta(days=19),
         "modify_date": datetime.now() - timedelta(days=18),
-        "image_path": ["sample_images/014.JPG", "sample_images/015.JPG"],
+        "image_path": ["sample_images/014.jpg", "sample_images/015.jpg"],
         "view_count": 445,
         "user_id": 8
     },
@@ -162,7 +162,7 @@ sample_posts_data = [
         "content": "홈쿡! 처음 만들어본 파스타인데 생각보다 맛있게 나왔다. 요리는 하면 할수록 재미있는 것 같아 👨‍🍳",
         "create_date": datetime.now() - timedelta(days=9),
         "modify_date": datetime.now() - timedelta(days=8),
-        "image_path": ["sample_images/016.JPG"],
+        "image_path": ["sample_images/016.jpg"],
         "view_count": 387,
         "user_id": 3
     },
@@ -178,7 +178,7 @@ sample_posts_data = [
         "content": "먹방이 취미! 한 끼에 정성스럽게 밥을 차리는 것만으로도 행복해진다. 음식이야말로 최고의 힐링이다 😋",
         "create_date": datetime.now() - timedelta(days=24),
         "modify_date": datetime.now() - timedelta(days=22),
-        "image_path": ["sample_images/017.JPG"],
+        "image_path": ["sample_images/017.jpg"],
         "view_count": 612,
         "user_id": 5
     },
@@ -194,7 +194,7 @@ sample_posts_data = [
         "content": "요리는 예술이다! 계란 계란말이를 만드는데 생각보다 어렵네. 그래도 맛있으면 장땡이지 🍚",
         "create_date": datetime.now() - timedelta(days=13),
         "modify_date": datetime.now() - timedelta(days=12),
-        "image_path": ["sample_images/018.JPG"],
+        "image_path": ["sample_images/018.jpg"],
         "view_count": 325,
         "user_id": 7
     },
@@ -202,7 +202,7 @@ sample_posts_data = [
         "content": "카페에서의 힐링 시간! 핸드드립 커피 한 잔하며 명상하는 시간... 이런 게 진짜 여유다 ☕✨",
         "create_date": datetime.now() - timedelta(days=4),
         "modify_date": datetime.now() - timedelta(days=3),
-        "image_path": ["sample_images/019.JPG"],
+        "image_path": ["sample_images/019.jpg"],
         "view_count": 287,
         "user_id": 8
     },
@@ -220,7 +220,7 @@ sample_posts_data = [
         "content": "인천 여행 플랜! 송도 센트럴파크에서 자전거 타고 관광했어. 야경도 멋있고 분위기 좋아 🚴",
         "create_date": datetime.now() - timedelta(days=17),
         "modify_date": datetime.now() - timedelta(days=16),
-        "image_path": ["sample_images/020.JPG"],
+        "image_path": ["sample_images/020.jpg"],
         "view_count": 156,
         "user_id": 2
     },
@@ -236,7 +236,7 @@ sample_posts_data = [
         "content": "마라톤 완주! 처음 뛰어본 풀코스인데 해냈다! 운동을 꾸준히 하니까 이런 일도 가능하네 🏃‍♂️",
         "create_date": datetime.now() - timedelta(days=29),
         "modify_date": datetime.now() - timedelta(days=28),
-        "image_path": ["sample_images/021.JPG"],
+        "image_path": ["sample_images/021.jpg"],
         "view_count": 678,
         "user_id": 4
     },
@@ -252,7 +252,7 @@ sample_posts_data = [
         "content": "운동 후 회복 식사! 단백질 보충이 중요하다는 걸 깨달았어. 맛있게 먹으며 건강해지자 🥗",
         "create_date": datetime.now() - timedelta(days=10),
         "modify_date": datetime.now() - timedelta(days=9),
-        "image_path": ["sample_images/022.JPG"],
+        "image_path": ["sample_images/022.jpg"],
         "view_count": 198,
         "user_id": 6
     },
@@ -268,7 +268,7 @@ sample_posts_data = [
         "content": "바다 여행 가는 길! 수평선 보는 것만으로도 마음이 편해진다. 이런 여유가 필요한 시간이야 🌊",
         "create_date": datetime.now() - timedelta(days=27),
         "modify_date": datetime.now() - timedelta(days=26),
-        "image_path": ["sample_images/023.JPG", "sample_images/024.JPG"],
+        "image_path": ["sample_images/023.jpg", "sample_images/024.jpg"],
         "view_count": 489,
         "user_id": 8
     },
